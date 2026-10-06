@@ -1,0 +1,49 @@
+schema_version: 1
+section: {id: close, index: "08", title: Close, minutes: [52, 60]}
+
+slides:
+  - id: close.choose
+    kind: content
+    eyebrow: close / choosing
+    title: Choose by who should own the loop
+    deck: Four questions settle most AWS agent designs before anyone writes code.
+    audience: [everyone]
+    layout: full
+    main:
+      - type: table
+        h: 4.4
+        columns: [If you need, Start with, Because]
+        widths: [5, 4, 6]
+        rows:
+          - ["An agent from configuration, quickly", "AgentCore harness", "AWS runs the loop, memory and tools; export to Strands later"]
+          - ["Custom orchestration or proof of exactly-once", "Strands on AgentCore Runtime", "You own the loop, so you can test and deduplicate it"]
+          - ["Answers from your documents", "Managed Knowledge Base", "Retrieval, parsing and the store are managed"]
+          - ["Existing OpenAI code on AWS", "Bedrock OpenAI-compatible APIs", "Change the base URL and the key, keep the code"]
+          - ["Tools other agents can use", "AgentCore Gateway + Policy", "MCP for every API, checked outside the agent"]
+          - ["An Agents Classic agent today", "Keep it running; migrate when you touch it", "No end-of-life date, but no new features or models"]
+    run: [awsai-demo all]
+
+  - id: close.first_step
+    kind: content
+    eyebrow: close / first step
+    title: One first step for every role in the room
+    deck: Each takes less than an hour and needs nothing but this repository.
+    audience: [everyone]
+    layout: full
+    main:
+      - type: table
+        h: 4.2
+        columns: [Role, This week]
+        widths: [3, 12]
+        rows:
+          - [Sales, "Ask every prospect which AWS AI services they run today; check each against awsai-demo lineage --status maintenance."]
+          - [Managers, "Make a pilot's acceptance criteria name the mode: a contract test, an emulator run or a live run."]
+          - [Architects, "Fill in the responsibility matrix from awsai-demo decision for your own use case before choosing harness or code."]
+          - [Developers, "Clone the repo, run awsai-demo all offline, then rerun one demo with --execution live and compare the evidence."]
+    run: ["awsai-demo lineage --status maintenance"]
+
+  - id: close.questions
+    kind: closing
+    eyebrow: questions
+    title: Thank you
+    deck: "Every slide's command runs offline: uv run awsai-demo list"

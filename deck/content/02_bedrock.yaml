@@ -1,0 +1,182 @@
+schema_version: 1
+section: {id: bedrock, index: "02", title: "Bedrock: models", minutes: [11, 18]}
+
+slides:
+  - id: bedrock.section
+    kind: section
+    eyebrow: bedrock
+    title: "Bedrock: one API in front of many models"
+    deck: Calling a model is the easy part. Choosing the API, the route and the lifecycle is the work.
+    bullets:
+      - Converse versus InvokeModel
+      - The OpenAI-compatible door
+      - Catalog, lifecycle, inference profiles
+      - Guardrails, prompts and flows
+
+  - id: bedrock.converse
+    kind: content
+    eyebrow: bedrock / converse
+    title: Converse is one request shape for every model
+    deck: InvokeModel still works, but its body changes with every provider you try.
+    audience: [developers]
+    layout: main_rail
+    main:
+      - type: code
+        h: 4.2
+        ref: "src/awsai_demo/bedrock_runtime_demo.py#converse-request"
+        caption: "The same request runs on Nova, Claude, Llama or Mistral: only modelId changes."
+      - type: text
+        h: 0.9
+        size: 14
+        text: "Converse also carries tools, documents, images and a guardrail. Batch jobs and asynchronous invocations take the same shape but cannot be bounded inside one command, so this repo shows their request only."
+    rail:
+      - type: compare
+        h: 3.2
+        left:
+          title: InvokeModel
+          items: ["Provider JSON body", "Rewrite to switch model", "Still supported"]
+        right:
+          title: Converse
+          items: ["One message format", "Tools and guardrails built in", "Default for new code"]
+      - type: metrics
+        h: 1.4
+        items:
+          - {value: "{facts.live.converse.input_tokens} / {facts.live.converse.output_tokens}", label: "tokens in / out, live run"}
+    run: [awsai-demo bedrock-runtime]
+
+  - id: bedrock.openai
+    kind: content
+    eyebrow: bedrock / openai-compatible
+    title: Existing OpenAI code can run on Bedrock unchanged
+    deck: Point the openai SDK at Bedrock and pay with an AWS-issued key, not an OpenAI one.
+    audience: [developers, architects]
+    layout: main_rail
+    main:
+      - type: code
+        h: 3.6
+        ref: "src/awsai_demo/bedrock_openai_demo.py#openai-client"
+        caption: "A short-term Bedrock API key is minted from your AWS session; nothing leaves the machine until the call."
+      - type: lineage
+        h: 1.8
+        ids: [bedrock-mantle]
+    rail:
+      - type: callout
+        tone: warning
+        text: "Do not reuse OPENAI_API_KEY. On most laptops it is a real OpenAI key, and the call would fail or go to the wrong vendor."
+      - type: bullets
+        h: 2.2
+        size: 13
+        items:
+          - "Base URL: bedrock-runtime.<region>.amazonaws.com/openai/v1"
+          - "Chat Completions and Responses APIs"
+          - "IAM can restrict API keys with bedrock:CallWithBearerToken"
+    run: [awsai-demo bedrock-openai]
+
+  - id: bedrock.catalog
+    kind: content
+    eyebrow: bedrock / catalog
+    title: Read the lifecycle field before you pick a model
+    deck: The catalog is an API. Its status field tells you what you may still build on.
+    audience: [architects, developers]
+    layout: main_rail
+    main:
+      - type: metrics
+        h: 1.7
+        items:
+          - {value: "{facts.live.catalog.model_count}", label: "models in {facts.live.catalog.region}"}
+          - {value: "{facts.live.catalog.legacy_count}", label: "of them LEGACY"}
+          - {value: "{facts.live.catalog.provider_count}", label: providers}
+          - {value: "{facts.live.catalog.global_profiles}", label: "global. inference profiles"}
+      - type: table
+        h: 2.8
+        columns: [Model id form, Example, Means]
+        widths: [3, 5.5, 5.5]
+        rows:
+          - ["Foundation model", "amazon.nova-2-lite-v1:0", "One Region; use for GetFoundationModel"]
+          - ["Geographic profile", "us.amazon.nova-2-lite-v1:0", "Routed inside one geography"]
+          - ["Global profile", "global.amazon.nova-2-lite-v1:0", "Routed worldwide; not a residency boundary"]
+      - type: source_note
+        text: "Live read on {facts.live.catalog.read_at}. Tested default: global.anthropic.claude-haiku-4-5-20251001-v1:0, because CountTokens can price it exactly."
+    rail:
+      - type: callout
+        tone: info
+        text: "Choose the inference profile from your data-residency rule first and your throughput need second."
+      - type: callout
+        tone: warning
+        text: "In Legacy, new customers cannot start and existing ones can lose access after 15 idle days."
+    run: [awsai-demo model-lifecycle]
+
+  - id: bedrock.guardrails
+    kind: content
+    eyebrow: bedrock / guardrails
+    title: Guardrails check text without calling a model
+    deck: ApplyGuardrail screens input and output, so one policy can protect any model.
+    audience: [architects, developers]
+    layout: main_rail
+    main:
+      - type: diagram
+        h: 2.4
+        nodes:
+          - {id: user, label: "User input", x: 0.0, y: 0.6, w: 2.0, h: 1.0}
+          - {id: gin, label: "ApplyGuardrail\nINPUT", x: 2.7, y: 0.6, w: 2.4, h: 1.0, kind: guard}
+          - {id: model, label: "Any model\n(Bedrock or not)", x: 5.8, y: 0.6, w: 2.6, h: 1.0}
+          - {id: gout, label: "ApplyGuardrail\nOUTPUT", x: 9.1, y: 0.6, w: 2.4, h: 1.0, kind: guard}
+        edges:
+          - {from: user, to: gin}
+          - {from: gin, to: model, label: allowed}
+          - {from: model, to: gout}
+      - type: code
+        h: 2.6
+        ref: "src/awsai_demo/guardrails_demo.py#apply-guardrail"
+    rail:
+      - type: table
+        h: 1.6
+        columns: [Live run, Action]
+        widths: [1.3, 3.3]
+        rows:
+          - ["Input with an email", "{facts.live.guardrail.input_action}"]
+          - ["Safe output", "{facts.live.guardrail.output_action}"]
+      - type: bullets
+        h: 2.4
+        size: 13
+        items:
+          - "Content, topics, words, PII"
+          - "Contextual grounding checks"
+          - "Automated Reasoning checks against formal rules"
+          - "Replaces Comprehend Prompt Safety (maintenance since 2026-03-31)"
+    run: [awsai-demo guardrails]
+
+  - id: bedrock.flows
+    kind: content
+    eyebrow: bedrock / prompts and flows
+    title: Prompts and Flows are the low-code layer, still active
+    deck: Version prompts like code; wire them into graphs without an agent framework.
+    audience: [managers, architects]
+    layout: main_rail
+    main:
+      - type: diagram
+        h: 2.6
+        nodes:
+          - {id: in, label: "Flow input", x: 0.0, y: 0.8, w: 1.9, h: 0.9}
+          - {id: prompt, label: "Prompt node\n(versioned prompt)", x: 2.5, y: 0.8, w: 2.6, h: 0.9}
+          - {id: kb, label: "Knowledge base\nnode", x: 5.7, y: 0.0, w: 2.4, h: 0.9}
+          - {id: lambda, label: "Lambda or\ninline code", x: 5.7, y: 1.6, w: 2.4, h: 0.9}
+          - {id: out, label: "Flow output", x: 8.7, y: 0.8, w: 1.9, h: 0.9}
+        edges:
+          - {from: in, to: prompt}
+          - {from: prompt, to: kb}
+          - {from: prompt, to: lambda}
+          - {from: kb, to: out}
+          - {from: lambda, to: out}
+      - type: bullets
+        h: 1.8
+        size: 14
+        items:
+          - "Prompt management: versions, variables, optimization"
+          - "Flows: conditions, DoWhile loops, inline code, long-running executions"
+          - "Invoked through bedrock-agent-runtime InvokeFlow"
+    rail:
+      - type: callout
+        tone: warning
+        text: "A Flow's agent node calls an Agents Classic agent. New accounts cannot create one, so new flows should call AgentCore through Lambda instead."
+    run: [awsai-demo bedrock-flows]

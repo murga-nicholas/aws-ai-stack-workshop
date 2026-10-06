@@ -1,0 +1,13 @@
+services:
+  localstack:
+    # TODO: append the verified registry manifest digest before distribution.
+    # Tag is pinned; no registry lookup was performed for this offline milestone.
+    image: localstack/localstack:2026.09.0
+    ports:
+      - "127.0.0.1:4566:4566"
+    environment:
+      LOCALSTACK_AUTH_TOKEN: ${LOCALSTACK_AUTH_TOKEN:?Set your LocalStack auth token}
+      DEFAULT_BEDROCK_MODEL: ${DEFAULT_BEDROCK_MODEL:-qwen2.5:0.5b}
+      BEDROCK_PREWARM: "1"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

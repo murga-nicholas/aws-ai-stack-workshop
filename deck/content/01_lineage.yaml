@@ -1,0 +1,187 @@
+schema_version: 1
+section: {id: lineage, index: "01", title: Lineage, minutes: [3, 11]}
+
+slides:
+  - id: lineage.section
+    kind: section
+    eyebrow: lineage
+    title: Where today's names came from
+    deck: Read the lineage before you copy a 2024 sample or open a new account.
+    bullets:
+      - The stack today
+      - Three years in one line
+      - Agents, retrieval, assistants, models
+      - What maintenance mode really means
+
+  - id: lineage.stack_today
+    kind: content
+    eyebrow: lineage / the stack today
+    title: The AWS AI stack in October 2026, layer by layer
+    deck: Green is active; amber is maintenance or sunset. Everything here is in the repo.
+    audience: [everyone]
+    layout: full
+    main:
+      - type: layer_map
+        h: 5.6
+        layers:
+          - name: Build with code
+            items:
+              - {label: Strands Agents, status: active, ref: strands-agents}
+              - {label: "Any framework (LangGraph, OpenAI Agents SDK, ...)", status: active}
+              - {label: MCP and A2A, status: active, ref: mcp}
+          - name: Run and govern agents
+            items:
+              - {label: AgentCore Runtime, status: active, ref: agentcore-runtime}
+              - {label: AgentCore harness, status: active, ref: agentcore-harness}
+              - {label: Memory, status: active, ref: agentcore-memory}
+              - {label: Gateway and Policy, status: active, ref: agentcore-gateway}
+              - {label: Identity, status: active, ref: agentcore-identity}
+              - {label: "Tools: code, browser, web search", status: active, ref: agentcore-code-interpreter}
+              - {label: Observability and Evaluations, status: active, ref: agentcore-evaluations}
+              - {label: Agents Classic, status: maintenance, ref: agents-classic}
+          - name: Models and safety
+            items:
+              - {label: "Bedrock: Converse, OpenAI-compatible", status: active, ref: converse-api}
+              - {label: "Nova 2, Claude, GPT, Llama, Mistral ...", status: active, ref: nova-2}
+              - {label: Guardrails, status: active, ref: guardrails}
+              - {label: Prompt management and Flows, status: active, ref: bedrock-flows}
+          - name: Data
+            items:
+              - {label: Managed Knowledge Base, status: active, ref: managed-knowledge-base}
+              - {label: S3 Vectors, status: active, ref: s3-vectors}
+              - {label: "Textract, Transcribe, Comprehend ...", status: active, ref: comprehend}
+              - {label: Kendra, status: maintenance, ref: kendra}
+          - name: Local development
+            items:
+              - {label: "LocalStack (token required)", status: active, ref: localstack-auth-token}
+              - {label: "Offline mode of this repo", status: active}
+    run: [awsai-demo list]
+
+  - id: lineage.timeline
+    kind: content
+    eyebrow: lineage / three years
+    title: "Two waves: managed services, then building blocks"
+    deck: 2023 gave you finished services; 2025-2026 gave you parts, and closed the old doors.
+    audience: [everyone]
+    layout: full
+    main:
+      - type: timeline
+        h: 4.4
+        date_field: launched
+        ids:
+          - bedrock
+          - agents-classic
+          - knowledge-bases
+          - bedrock-flows
+          - nova-v1
+          - strands-agents
+          - agentcore
+          - nova-2
+          - bedrock-mantle
+          - agentcore-harness
+          - managed-knowledge-base
+          - agent-registry
+      - type: callout
+        tone: warning
+        text: "On 2026-07-30 Agents Classic, Kendra and Q Business closed to new customers. Most tutorials you will find were written before that date."
+    source_note: "Sources: Bedrock document history; AgentCore release notes; Services in Maintenance (read 2026-10-05)."
+
+  - id: lineage.agents
+    kind: content
+    eyebrow: lineage / agents
+    title: Agents Classic gave way to AgentCore and Strands
+    deck: A successor carries the idea forward; a migration still changes your code.
+    audience: [architects, developers]
+    layout: full
+    main:
+      - type: lineage
+        h: 4.8
+        ids:
+          - agents-classic
+          - agents-classic-multi-agent
+          - multi-agent-orchestrator
+          - agentcore-starter-toolkit
+      - type: source_note
+        text: "Sources: Agents Classic maintenance mode (Bedrock User Guide); PyPI; AgentCore release notes."
+    run: [awsai-demo agents-classic]
+
+  - id: lineage.retrieval_assistants
+    kind: content
+    eyebrow: lineage / retrieval and assistants
+    title: Search, assistants and studios found new homes
+    deck: Three first-wave products closed in summer 2026; one IDE moved twice.
+    audience: [everyone]
+    layout: full
+    main:
+      - type: lineage
+        h: 4.8
+        ids:
+          - kendra
+          - q-business
+          - codewhisperer
+          - q-developer-ide
+          - bedrock-studio
+      - type: source_note
+        text: "Sources: Kendra and Q Business availability-change pages; Services in Sunset; Bedrock document history."
+    run: [awsai-demo kendra]
+
+  - id: lineage.models
+    kind: content
+    eyebrow: lineage / models and endpoints
+    title: Models have a lifecycle, and so do endpoints
+    deck: "Active, Legacy, End-of-Life: in Legacy, new customers cannot start and idle ones lose access."
+    audience: [developers, architects]
+    layout: main_rail
+    main:
+      - type: lineage
+        h: 4.6
+        ids:
+          - titan-text
+          - nova-v1
+          - claude-sonnet-4
+          - invoke-model-api
+          - bedrock-mantle
+    rail:
+      - type: steps
+        h: 3.2
+        items:
+          - "ACTIVE: use it."
+          - "LEGACY: no new customers; 15 idle days can cost you access; plan the move."
+          - "EOL: requests fail. Nothing migrates automatically."
+      - type: callout
+        tone: warning
+        text: "Claude Sonnet 4 reaches EOL on 2026-10-14."
+    run: [awsai-demo model-lifecycle]
+
+  - id: lineage.maintenance_mode
+    kind: content
+    eyebrow: lineage / maintenance mode
+    title: Maintenance mode is a closed door with the lights on
+    deck: Existing users keep everything; a new account gets a 403. Check before you design.
+    audience: [everyone]
+    layout: full
+    main:
+      - type: compare
+        h: 2.0
+        left:
+          title: If you already use it
+          items:
+            - "APIs, IaC templates and SDK clients keep working"
+            - "Bug and security fixes continue"
+            - "No new features; Agents Classic's model list is frozen"
+        right:
+          title: If your account is new
+          items:
+            - "CreateAgent returns AccessDeniedException (HTTP 403)"
+            - "No exception process"
+            - "Build on the successor from day one"
+      - type: table
+        h: 3.5
+        source:
+          lineage:
+            filter: {normalized_status: [maintenance, sunset], entity_type: [service, product]}
+            fields: [name, normalized_status, effective, end_of_support]
+        columns: [Service, Status, Since, End of support]
+        widths: [7, 2.4, 2.2, 2.4]
+    source_note: "Observed live on the workshop account: kendra ListIndices returned {facts.live.kendra.list_indices_code}. {facts.offline.lineage.maintenance_count} records in maintenance, {facts.offline.lineage.sunset_count} in sunset (data/lineage.yaml)."
+    run: ["awsai-demo lineage --status maintenance"]

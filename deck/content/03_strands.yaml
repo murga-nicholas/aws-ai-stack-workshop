@@ -1,0 +1,107 @@
+schema_version: 1
+section: {id: strands, index: "03", title: Strands Agents, minutes: [18, 23]}
+
+slides:
+  - id: strands.section
+    kind: section
+    eyebrow: strands
+    title: Strands is how AWS writes agents in code
+    deck: Open source since May 2025, model-agnostic, and the code-first path onto AgentCore.
+    bullets:
+      - The agent loop
+      - Multi-agent patterns
+      - MCP and A2A
+
+  - id: strands.agent
+    kind: content
+    eyebrow: strands / the agent loop
+    title: A Strands agent is a model, a prompt and some tools
+    deck: The model decides which tool to call; your code decides what the tool may do.
+    audience: [developers]
+    layout: main_rail
+    main:
+      - type: code
+        h: 4.4
+        ref: "src/awsai_demo/strands_agent_demo.py#agent"
+        caption: "price_pilot is ordinary Python; the @tool docstring is what the model reads."
+      - type: text
+        h: 0.8
+        size: 14
+        text: "Offline, the real Strands loop runs around a scripted model, so tool calls, callbacks and structured output are genuine and only the model's words are fixed."
+    rail:
+      - type: steps
+        h: 3.0
+        items:
+          - "Model reads prompt and tool specs"
+          - "Model asks for price_pilot"
+          - "Strands runs the tool, returns the result"
+          - "Model writes the answer as PilotSummary"
+      - type: callout
+        tone: info
+        text: "Swap ScriptedModel for BedrockModel or OpenAIModel: nothing else in the agent changes."
+    run: [awsai-demo strands-agent]
+
+  - id: strands.multiagent
+    kind: content
+    eyebrow: strands / multi-agent
+    title: Graphs and swarms replace Classic collaboration
+    deck: Pick the pattern from who should decide the next step.
+    audience: [architects, developers]
+    layout: full
+    main:
+      - type: table
+        h: 2.4
+        columns: [Pattern, Who decides the next step, Use it for]
+        widths: [3, 6, 6]
+        rows:
+          - ["Graph (GraphBuilder)", "You: edges are fixed in code", "Repeatable pipelines: research, cost, review"]
+          - ["Swarm", "The agents: they hand off to each other", "Open-ended work with a hard handoff limit"]
+          - ["Agent as a tool", "A supervisor agent", "The Agents Classic supervisor pattern, in code"]
+      - type: diagram
+        h: 1.9
+        nodes:
+          - {id: research, label: researcher, x: 0.5, y: 0.4, w: 2.4, h: 0.9}
+          - {id: costing, label: costing, x: 4.0, y: 0.4, w: 2.4, h: 0.9}
+          - {id: review, label: reviewer, x: 7.5, y: 0.4, w: 2.4, h: 0.9}
+          - {id: note, label: "Graph used by the demo", x: 11.0, y: 0.4, w: 3.4, h: 0.9, kind: note}
+        edges:
+          - {from: research, to: costing}
+          - {from: costing, to: review}
+      - type: lineage
+        h: 1.4
+        ids: [agents-classic-multi-agent]
+    run: [awsai-demo strands-multiagent]
+
+  - id: strands.protocols
+    kind: content
+    eyebrow: strands / protocols
+    title: MCP connects tools; A2A connects agents
+    deck: Both run on this laptop in the demo, over stdio and over localhost HTTP.
+    audience: [architects, developers]
+    layout: full
+    main:
+      - type: compare
+        h: 2.8
+        left:
+          title: Model Context Protocol
+          items:
+            - "Agent to tool and data"
+            - "Strands consumes MCP servers with MCPClient"
+            - "AgentCore Gateway turns APIs into MCP tools"
+            - "AWS MCP Server (GA 2026-05-06) for coding agents"
+        right:
+          title: Agent2Agent
+          items:
+            - "Agent to agent: an agent card plus tasks"
+            - "Strands serves agents with A2AServer"
+            - "AgentCore Runtime hosts A2A agents"
+            - "AWS Agent Registry catalogs them"
+      - type: metrics
+        h: 1.4
+        items:
+          - {value: "{facts.offline.mcp.tools}", label: "tools listed over MCP"}
+          - {value: "{facts.offline.packages.a2a_sdk}", label: "a2a-sdk version Strands needs"}
+      - type: callout
+        tone: warning
+        text: "Strands' A2A support pins a2a-sdk below 0.4. The current a2a-sdk 1.x fails to import with it, so pin the extra, not the latest SDK."
+    run: [awsai-demo mcp, awsai-demo a2a]

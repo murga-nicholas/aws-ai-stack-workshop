@@ -1,0 +1,260 @@
+schema_version: 1
+section: {id: appendix, index: "09", title: Appendix, minutes: null}
+
+slides:
+  - id: appendix.section
+    kind: section
+    eyebrow: appendix
+    title: Take-home reference
+    deck: Not presented. Each slide stands on its own and names the command behind it.
+    bullets:
+      - Identity, cost, SageMaker AI, Nova Act, customization, Kendra
+      - Every deprecation in one table
+      - Repository, modes, references
+
+  - id: appendix.identity
+    kind: appendix
+    eyebrow: appendix / identity
+    title: Authentication is not authorisation, measured
+    deck: Two principals, the same STS success, two different answers from Bedrock.
+    audience: [architects, developers]
+    layout: main_rail
+    main:
+      - type: table
+        h: 2.4
+        columns: [Principal, STS GetCallerIdentity, Bedrock ListFoundationModels]
+        widths: [5, 4, 5]
+        rows:
+          - ["Workshop credentials", "{facts.live.identity.authenticated}", "{facts.live.identity.bedrock_probe}"]
+          - ["Sandbox principal without Bedrock permissions", "{facts.live.identity.denied_authenticated}", "{facts.live.identity.denied_probe} ({facts.live.identity.denied_code})"]
+      - type: bullets
+        h: 2.0
+        size: 14
+        items:
+          - "GetCallerIdentity needs no permission: success proves who you are, nothing more"
+          - "A real 403 is reported as live_service and blocked: a successful demonstration, not a broken demo"
+          - "The account id and ARN never appear in output; the repo redacts them"
+          - "A third layer: Anthropic models need a one-time use-case form per account; until then Converse returns ResourceNotFoundException"
+    rail:
+      - type: callout
+        tone: info
+        text: "Credential order: --profile, AWS_PROFILE, AWS_CREDS_FILE_PATH, default chain. A failure never falls through to another identity."
+    run: ["awsai-demo aws-identity --execution live"]
+
+  - id: appendix.cost
+    kind: appendix
+    eyebrow: appendix / cost
+    title: Cost per successful run depends on tier and routing
+    deck: Prices read from the AWS Price List API; retries are counted, failed calls are not free.
+    audience: [managers, architects]
+    layout: full
+    main:
+      - type: table
+        h: 3.6
+        source: {facts: offline.cost.tiers}
+        columns: [Tier, Routing, USD per successful run]
+        widths: [4, 5, 5]
+      - type: callout
+        tone: info
+        text: "For Nova 2 Lite, in-Region tokens cost 10% more than global cross-Region routing; Flex and Batch halve the price; Priority adds 75%."
+    source_note: "Snapshot read {facts.offline.cost.snapshot_read_at} from the Price List API; awsai-demo cost --execution live reads it again."
+    run: [awsai-demo cost]
+
+  - id: appendix.sagemaker
+    kind: appendix
+    eyebrow: appendix / sagemaker ai
+    title: SageMaker AI is for models you train and host yourself
+    deck: Renamed in December 2024; eight features entered maintenance in June 2026.
+    audience: [architects]
+    layout: full
+    main:
+      - type: lineage
+        h: 3.0
+        ids: [sagemaker-ai-maintenance-features, sagemaker-profiler, forecast]
+      - type: bullets
+        h: 2.0
+        size: 14
+        items:
+          - "Still the place for training, tuning and hosting your own models: JumpStart, HyperPod, endpoints"
+          - "Bedrock custom model import is the serverless alternative for supported architectures"
+          - "LocalStack emulates SageMaker endpoints on the Ultimate plan"
+    run: [awsai-demo sagemaker-ai]
+
+  - id: appendix.nova_act
+    kind: appendix
+    eyebrow: appendix / nova act
+    title: Nova Act automates browsers as a service
+    deck: Workflow definitions and runs; a different tool from AgentCore Browser.
+    audience: [developers]
+    layout: full
+    main:
+      - type: compare
+        h: 2.8
+        left:
+          title: Amazon Nova Act
+          items: ["Agent model trained for UI actions", "Workflow definitions, runs, sessions", "Its own boto3 client: nova-act"]
+        right:
+          title: AgentCore Browser
+          items: ["A managed Chrome session", "Any model drives it", "One of AgentCore's built-in tools"]
+    run: [awsai-demo nova-act]
+
+  - id: appendix.customization
+    kind: appendix
+    eyebrow: appendix / customization
+    title: Five ways to change a model, none of them cheap to undo
+    deck: Request shapes only in this repo; these jobs cannot be bounded inside one command.
+    audience: [architects]
+    layout: full
+    main:
+      - type: table
+        h: 3.6
+        columns: [Method, What changes, Since]
+        widths: [4, 8, 2.5]
+        rows:
+          - ["Fine-tuning", "Weights, from labelled examples", "2023"]
+          - ["Distillation", "A small student learns from a large teacher", "2024-12"]
+          - ["Custom model import", "Your own open-weight model, served by Bedrock", "2024"]
+          - ["On-demand custom deployment", "Pay per token instead of Provisioned Throughput", "2025-07"]
+          - ["Reinforcement fine-tuning", "Weights, from feedback signals", "2025-12"]
+      - type: callout
+        tone: warning
+        text: "A model in Legacy cannot be fine-tuned again. Check the lifecycle before you invest in a base model."
+    run: [awsai-demo model-customization]
+
+  - id: appendix.kendra
+    kind: appendix
+    eyebrow: appendix / kendra
+    title: Moving a Kendra query to a managed knowledge base
+    deck: The request moves into retrievalQuery, and the filters change their names.
+    audience: [developers]
+    layout: main_rail
+    main:
+      - type: code
+        h: 3.8
+        ref: "src/awsai_demo/kendra_demo.py#translate"
+        caption: "A pure function, tested against AWS's published operator mapping."
+    rail:
+      - type: bullets
+        h: 3.2
+        size: 13
+        items:
+          - "EqualsTo becomes equals; AndAllFilters becomes andAll"
+          - "No startsWith or stringContains on managed knowledge bases"
+          - "No query suggestions, facets, synonyms or spell checking: build them in front"
+    run: [awsai-demo kendra]
+
+  - id: appendix.deprecations
+    kind: appendix
+    eyebrow: appendix / every deprecation
+    title: Every retired, closing or renamed name in this deck
+    deck: Generated from data/lineage.yaml, the same records the CLI prints.
+    audience: [everyone]
+    layout: full
+    main:
+      - type: table
+        h: 6.0
+        source:
+          lineage:
+            filter: {normalized_status: [maintenance, sunset, legacy, end_of_life, renamed, moved]}
+            fields: [name, normalized_status, effective, successors]
+        columns: [Name, Status, Since, Successor]
+        widths: [7, 2.4, 2.2, 4]
+    run: [awsai-demo lineage]
+
+  - id: appendix.repository
+    kind: appendix
+    eyebrow: appendix / repository
+    title: The repository behind every slide
+    deck: "{facts.offline.demo_count} demos, one command each, offline by default."
+    audience: [developers]
+    layout: full
+    main:
+      - type: table
+        h: 4.4
+        columns: [Path, What it holds]
+        widths: [5, 10]
+        rows:
+          - ["src/awsai_demo/", "One module per technology, plus the contract, credentials, budget and cleanup code"]
+          - ["data/lineage.yaml", "Every name, status and date the deck quotes"]
+          - ["data/components.yaml", "Which demo and slide cover each AWS component"]
+          - ["docs/module_spec.md", "The contract every module follows"]
+          - ["docs/research.md", "Every external claim, dated and sourced"]
+          - ["deck/content/*.yaml", "These slides, as data"]
+          - ["tests/", "Offline, 100% statements and branches"]
+    run: [awsai-demo list]
+
+  - id: appendix.readiness
+    kind: appendix
+    eyebrow: appendix / modes
+    title: Read the mode before you believe the result
+    deck: Status says what happened; mode says how it was produced.
+    audience: [everyone]
+    layout: full
+    main:
+      - type: table
+        h: 4.6
+        columns: [Mode, Meaning]
+        widths: [3.4, 11]
+        rows:
+          - [local_execution, "Real local computation or protocol execution. Nothing simulated."]
+          - [local_contract, "Real SDK and application code with a named, synthetic response."]
+          - [local_emulator, "LocalStack executed the AWS API on localhost."]
+          - [live_model, "A model actually answered."]
+          - [live_identity, "AWS STS actually verified the credentials."]
+          - [live_service, "An AWS service actually answered, including a real 403."]
+          - [attempt_failed, "A call was sent and no answer came back."]
+          - [not_run, "A prerequisite was missing; the output says which."]
+    run: [awsai-demo doctor]
+
+  - id: appendix.references
+    kind: appendix
+    eyebrow: appendix / references
+    title: Where to read more
+    deck: >-
+      Official documentation, every title a link (Ctrl+click in PowerPoint).
+      All read on 2026-10-05; docs/research.md has the claim-by-claim record.
+    audience: [everyone]
+    layout: full
+    main:
+      - type: links
+        h: 5.15
+        groups:
+          - title: Bedrock and models
+            items:
+              - {label: What is Amazon Bedrock, url: "https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html"}
+              - {label: "Document history: what changed when", url: "https://docs.aws.amazon.com/bedrock/latest/userguide/doc-history.html"}
+              - {label: Model lifecycle and legacy models, url: "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle.html"}
+              - {label: Agents Classic maintenance mode, url: "https://docs.aws.amazon.com/bedrock/latest/userguide/agents-classic-maintenance-mode.html"}
+              - {label: Guardrails, url: "https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html"}
+              - {label: Knowledge Bases, url: "https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html"}
+              - {label: S3 Vectors, url: "https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vectors.html"}
+              - {label: OpenAI- and Anthropic-compatible APIs, url: "https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-bedrock-redesigned-console-optimized-openai-anthropic-compatible-apis/"}
+          - title: AgentCore and Strands
+            items:
+              - {label: What is Amazon Bedrock AgentCore, url: "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html"}
+              - {label: Runtime, url: "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html"}
+              - {label: Gateway, url: "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html"}
+              - {label: Memory, url: "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory.html"}
+              - {label: Identity, url: "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity.html"}
+              - {label: Harness, url: "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/harness.html"}
+              - {label: Registry, url: "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/registry.html"}
+              - {label: AgentCore release notes, url: "https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html"}
+              - {label: Strands Agents documentation, url: "https://strandsagents.com/docs/"}
+              - {label: strands-agents on PyPI, url: "https://pypi.org/project/strands-agents/"}
+          - title: Lifecycle, local runs and cost
+            items:
+              - {label: AWS services in maintenance, url: "https://docs.aws.amazon.com/general/latest/gr/maintenance_services.html"}
+              - {label: AWS services in sunset, url: "https://docs.aws.amazon.com/general/latest/gr/sunset_services.html"}
+              - {label: Kendra availability change, url: "https://docs.aws.amazon.com/kendra/latest/dg/kendra-availability-change.html"}
+              - {label: Q Business availability change, url: "https://docs.aws.amazon.com/amazonq/latest/qbusiness-ug/qbusiness-availability-change.html"}
+              - {label: "LocalStack: Bedrock", url: "https://docs.localstack.cloud/aws/services/bedrock/"}
+              - {label: "LocalStack: SageMaker", url: "https://docs.localstack.cloud/aws/services/sagemaker/"}
+              - {label: "LocalStack: Transcribe", url: "https://docs.localstack.cloud/aws/services/transcribe/"}
+              - {label: "LocalStack: Textract", url: "https://docs.localstack.cloud/aws/services/textract/"}
+              - {label: LocalStack 2026.03.0 release notes, url: "https://blog.localstack.cloud/localstack-for-aws-release-2026-03-0/"}
+              - {label: AWS Price List Query API, url: "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/using-price-list-query-api.html"}
+      - type: callout
+        tone: info
+        h: 0.6
+        text: >-
+          Lifecycle pages change without notice: re-read one before you quote its date.

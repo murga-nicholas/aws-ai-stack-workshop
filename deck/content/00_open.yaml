@@ -1,0 +1,55 @@
+schema_version: 1
+section: {id: open, index: "00", title: Opening, minutes: [0, 3]}
+
+slides:
+  - id: open.title
+    kind: title
+    eyebrow: WORKSHOP
+    title: AWS AI stack
+    deck: "Bedrock | AgentCore | Strands | MCP · A2A | LocalStack"
+    audience: [everyone]
+
+  - id: open.promise
+    kind: content
+    eyebrow: the promise
+    title: Four things you can do after this hour
+    deck: Each one is checked by a command you can run tonight, with no AWS account.
+    audience: [everyone]
+    layout: full
+    main:
+      - type: table
+        h: 4.6
+        columns: [Skill, What it means, Proved by]
+        widths: [2, 7, 4]
+        rows:
+          - [EXPLAIN, "Trace one request through Bedrock, a Strands agent, AgentCore and back, and name who owns each step", "awsai-demo strands-agent"]
+          - [CHOOSE, "Pick between the AgentCore harness, a code-defined agent and Agents Classic, and defend it", "awsai-demo decision"]
+          - [MIGRATE, "Spot a service in maintenance mode before you build on it, and name its successor", "awsai-demo lineage --status maintenance"]
+          - [RUN HONESTLY, "Run every demo offline, on LocalStack or live, and say which one you did", "awsai-demo doctor"]
+      - type: callout
+        h: 0.8
+        tone: info
+        text: "Every result prints its mode: local_execution, local_contract, local_emulator or live. Nothing simulated is ever shown as a cloud call."
+
+  - id: open.agenda
+    kind: content
+    eyebrow: agenda
+    title: Sixty minutes, eight stops
+    deck: The command on the right is what we run at each stop; all of them work offline.
+    audience: [everyone]
+    layout: full
+    main:
+      - type: table
+        h: 5.9
+        columns: [When, Segment, What you will see, Command]
+        widths: [1.6, 3, 7.2, 4.2]
+        rows:
+          - ["0-3", Opening, "The promise and the route", "awsai-demo list"]
+          - ["3-11", Lineage, "What replaced what in 2023-2026, and what maintenance mode means", "awsai-demo lineage"]
+          - ["11-18", "Bedrock: models", "Converse, OpenAI-compatible APIs, the catalog, guardrails, flows", "awsai-demo bedrock-runtime"]
+          - ["18-23", Strands, "AWS's open-source agent framework, multi-agent, MCP and A2A", "awsai-demo strands-agent"]
+          - ["23-36", AgentCore, "Runtime, harness, memory, gateway and policy, identity, tools, evaluation", "awsai-demo agentcore-harness"]
+          - ["36-42", "The decision", "One business decision, three implementations, who owns what", "awsai-demo decision"]
+          - ["42-47", "Data", "Knowledge bases, S3 Vectors, the task-specific AI services", "awsai-demo knowledge-bases"]
+          - ["47-52", LocalStack, "What runs locally, on which plan, and what does not", "awsai-demo localstack"]
+          - ["52-60", "Close and Q&A", "How to choose, and a first step for every role", "-"]

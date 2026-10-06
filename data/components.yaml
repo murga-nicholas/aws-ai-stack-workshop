@@ -1,0 +1,395 @@
+# Every AWS AI stack component the workshop claims to cover, and where.
+#
+# A test enforces this file: every demo in the registry appears in at least
+# one component; every component marked `covered: true` names at least one
+# demo AND at least one slide id that exists in deck/content/*.yaml; every
+# lineage id exists in data/lineage.yaml. `covered: false` is an explicit,
+# reasoned exclusion - the `reason` says why.
+#
+# layers: models | safety | low-code | framework | agent-platform | protocols |
+#         retrieval | ai-services | ml-platform | assistants | identity |
+#         operations | local
+
+schema_version: 1
+
+components:
+
+  # ---- Models -----------------------------------------------------------
+  - id: bedrock-models
+    name: Amazon Bedrock model inference (Converse, InvokeModel, streaming, token counting)
+    layer: models
+    lineage: [bedrock, converse-api, invoke-model-api]
+    demos: [bedrock-runtime, strands-agent, decision]
+    slides: [bedrock.converse, lineage.stack_today]
+    covered: true
+
+  - id: bedrock-openai-compatible
+    name: OpenAI-compatible Responses and Chat Completions on Bedrock
+    layer: models
+    lineage: [bedrock-mantle, bedrock-runtime-openai]
+    demos: [bedrock-openai]
+    slides: [bedrock.openai]
+    covered: true
+
+  - id: bedrock-api-keys
+    name: Bedrock API keys
+    layer: identity
+    lineage: [bedrock-api-keys]
+    demos: [bedrock-openai]
+    slides: [bedrock.openai]
+    covered: true
+
+  - id: model-catalog-lifecycle
+    name: Model catalog and lifecycle (Active, Legacy, EOL)
+    layer: models
+    lineage: [bedrock-model-lifecycle, titan-text, nova-v1, nova-2, claude-sonnet-4, claude-haiku-4-5]
+    demos: [model-lifecycle]
+    slides: [bedrock.catalog, lineage.models]
+    covered: true
+
+  - id: inference-profiles
+    name: Cross-Region inference profiles
+    layer: models
+    lineage: [bedrock-inference-profiles]
+    demos: [model-lifecycle, cost]
+    slides: [bedrock.catalog, appendix.cost]
+    covered: true
+
+  - id: service-tiers
+    name: Inference service tiers (Standard, Flex, Priority, Reserved) and batch pricing
+    layer: operations
+    lineage: [bedrock-service-tiers]
+    demos: [cost]
+    slides: [appendix.cost]
+    covered: true
+
+  - id: batch-async-inference
+    name: Batch inference and asynchronous invocation
+    layer: models
+    lineage: [bedrock]
+    demos: [bedrock-runtime]
+    slides: [bedrock.converse]
+    covered: true
+
+  - id: model-customization
+    name: Fine-tuning, reinforcement fine-tuning, distillation, custom model import
+    layer: models
+    lineage: [model-customization]
+    demos: [model-customization]
+    slides: [appendix.customization]
+    covered: true
+
+  - id: amazon-nova
+    name: Amazon Nova and Nova 2 models
+    layer: models
+    lineage: [nova-v1, nova-2, titan-text, titan-embeddings-v2]
+    demos: [model-lifecycle, bedrock-runtime]
+    slides: [lineage.models, bedrock.catalog]
+    covered: true
+
+  - id: nova-act
+    name: Amazon Nova Act
+    layer: framework
+    lineage: [nova-act]
+    demos: [nova-act]
+    slides: [appendix.nova_act]
+    covered: true
+
+  # ---- Safety and low-code ----------------------------------------------
+  - id: guardrails
+    name: Bedrock Guardrails (ApplyGuardrail, Automated Reasoning checks)
+    layer: safety
+    lineage: [guardrails, comprehend-prompt-safety]
+    demos: [guardrails]
+    slides: [bedrock.guardrails]
+    covered: true
+
+  - id: prompt-management-flows
+    name: Prompt management and Bedrock Flows
+    layer: low-code
+    lineage: [prompt-management, bedrock-flows]
+    demos: [bedrock-flows]
+    slides: [bedrock.flows]
+    covered: true
+
+  # ---- Agents -------------------------------------------------------------
+  - id: agents-classic
+    name: Bedrock Agents Classic (action groups, return of control, multi-agent collaboration)
+    layer: agent-platform
+    lineage: [agents-classic, agents-classic-multi-agent]
+    demos: [agents-classic, decision]
+    slides: [lineage.agents, lineage.maintenance_mode, decision.three_ways]
+    covered: true
+
+  - id: strands-agents
+    name: Strands Agents (agent loop, tools, structured output, interrupts, sessions)
+    layer: framework
+    lineage: [strands-agents]
+    demos: [strands-agent, decision, evaluation, observability]
+    slides: [strands.agent, decision.three_ways]
+    covered: true
+
+  - id: strands-multiagent
+    name: Strands multi-agent (Graph, Swarm, agents-as-tools)
+    layer: framework
+    lineage: [strands-multiagent, agent-squad, multi-agent-orchestrator]
+    demos: [strands-multiagent]
+    slides: [strands.multiagent]
+    covered: true
+
+  - id: agentcore-runtime
+    name: AgentCore Runtime
+    layer: agent-platform
+    lineage: [agentcore, agentcore-runtime]
+    demos: [agentcore-runtime]
+    slides: [agentcore.map, agentcore.runtime]
+    covered: true
+
+  - id: agentcore-harness
+    name: AgentCore harness
+    layer: agent-platform
+    lineage: [agentcore-harness]
+    demos: [agentcore-harness, decision]
+    slides: [agentcore.harness, decision.three_ways]
+    covered: true
+
+  - id: agentcore-memory
+    name: AgentCore Memory
+    layer: agent-platform
+    lineage: [agentcore-memory]
+    demos: [agentcore-memory]
+    slides: [agentcore.memory]
+    covered: true
+
+  - id: agentcore-gateway
+    name: AgentCore Gateway
+    layer: agent-platform
+    lineage: [agentcore-gateway]
+    demos: [agentcore-gateway]
+    slides: [agentcore.gateway]
+    covered: true
+
+  - id: agentcore-policy
+    name: Policy in AgentCore (Cedar at the gateway)
+    layer: agent-platform
+    lineage: [agentcore-policy]
+    demos: [agentcore-gateway]
+    slides: [agentcore.gateway]
+    covered: true
+
+  - id: agentcore-identity
+    name: AgentCore Identity
+    layer: identity
+    lineage: [agentcore-identity]
+    demos: [agentcore-identity]
+    slides: [agentcore.identity]
+    covered: true
+
+  - id: agentcore-code-interpreter
+    name: AgentCore Code Interpreter
+    layer: agent-platform
+    lineage: [agentcore-code-interpreter]
+    demos: [agentcore-tools]
+    slides: [agentcore.tools]
+    covered: true
+
+  - id: agentcore-browser
+    name: AgentCore Browser
+    layer: agent-platform
+    lineage: [agentcore-browser]
+    demos: [agentcore-tools]
+    slides: [agentcore.tools]
+    covered: true
+
+  - id: agentcore-web-search
+    name: AgentCore Web Search
+    layer: agent-platform
+    lineage: [agentcore-web-search]
+    demos: [agentcore-tools]
+    slides: [agentcore.tools]
+    covered: true
+
+  - id: agentcore-payments
+    name: AgentCore payments (preview)
+    layer: agent-platform
+    lineage: [agentcore-payments]
+    demos: [agentcore-tools]
+    slides: [agentcore.tools]
+    covered: true
+
+  - id: agentcore-observability
+    name: AgentCore Observability (OpenTelemetry)
+    layer: operations
+    lineage: [agentcore-observability]
+    demos: [observability]
+    slides: [agentcore.observe]
+    covered: true
+
+  - id: agentcore-evaluations
+    name: AgentCore Evaluations and the optimization loop
+    layer: operations
+    lineage: [agentcore-evaluations, agentcore-optimization]
+    demos: [evaluation]
+    slides: [agentcore.observe]
+    covered: true
+
+  - id: agent-registry
+    name: AWS Agent Registry
+    layer: agent-platform
+    lineage: [agent-registry]
+    demos: [a2a]
+    slides: [agentcore.registry]
+    covered: true
+
+  - id: agentcore-tooling
+    name: AgentCore CLI and starter toolkit
+    layer: agent-platform
+    lineage: [agentcore-cli, agentcore-starter-toolkit]
+    demos: [agentcore-runtime]
+    slides: [agentcore.runtime, lineage.agents]
+    covered: true
+
+  # ---- Protocols ------------------------------------------------------------
+  - id: mcp
+    name: Model Context Protocol and the AWS MCP Server
+    layer: protocols
+    lineage: [mcp, aws-mcp-server]
+    demos: [mcp, agentcore-gateway]
+    slides: [strands.protocols]
+    covered: true
+
+  - id: a2a
+    name: Agent2Agent protocol
+    layer: protocols
+    lineage: [a2a]
+    demos: [a2a]
+    slides: [strands.protocols]
+    covered: true
+
+  # ---- Retrieval and data ---------------------------------------------------
+  - id: knowledge-bases
+    name: Bedrock Knowledge Bases and the Managed Knowledge Base
+    layer: retrieval
+    lineage: [knowledge-bases, managed-knowledge-base]
+    demos: [knowledge-bases]
+    slides: [data.knowledge_bases]
+    covered: true
+
+  - id: kendra
+    name: Amazon Kendra (maintenance)
+    layer: retrieval
+    lineage: [kendra]
+    demos: [kendra]
+    slides: [lineage.retrieval_assistants, appendix.kendra]
+    covered: true
+
+  - id: s3-vectors
+    name: Amazon S3 Vectors
+    layer: retrieval
+    lineage: [s3-vectors]
+    demos: [s3-vectors]
+    slides: [data.vectors]
+    covered: true
+
+  - id: ai-services
+    name: Task-specific AI services (Comprehend, Translate, Polly, Transcribe, Textract, Rekognition)
+    layer: ai-services
+    lineage: [comprehend, translate, polly, transcribe, textract, rekognition-maintenance-features, comprehend-prompt-safety]
+    demos: [ai-services]
+    slides: [data.ai_services]
+    covered: true
+
+  - id: bedrock-data-automation
+    name: Bedrock Data Automation
+    layer: ai-services
+    lineage: [bedrock-data-automation]
+    demos: [ai-services]
+    slides: [data.ai_services]
+    covered: true
+
+  - id: retired-ml-services
+    name: Forecast, Fraud Detector, Lookout for Equipment, Monitron, CodeGuru Reviewer
+    layer: ai-services
+    lineage: [forecast, fraud-detector, lookout-for-equipment, monitron, codeguru-reviewer]
+    demos: [ai-services]
+    slides: [data.ai_services]
+    covered: true
+
+  # ---- Platform and assistants ----------------------------------------------
+  - id: sagemaker-ai
+    name: Amazon SageMaker AI
+    layer: ml-platform
+    lineage: [sagemaker-ai, sagemaker-ai-maintenance-features, sagemaker-profiler]
+    demos: [sagemaker-ai]
+    slides: [appendix.sagemaker]
+    covered: true
+
+  - id: sagemaker-unified-studio
+    name: SageMaker Unified Studio (formerly Bedrock Studio)
+    layer: ml-platform
+    lineage: [bedrock-studio, sagemaker-unified-studio]
+    demos: []
+    slides: [lineage.retrieval_assistants]
+    covered: false
+    reason: A browser IDE; there is no developer API to demonstrate. Shown as lineage only.
+
+  - id: amazon-quick
+    name: Amazon Quick (formerly Q Business)
+    layer: assistants
+    lineage: [q-business, amazon-quick]
+    demos: []
+    slides: [lineage.retrieval_assistants]
+    covered: false
+    reason: An end-user product; Q Business is in maintenance and Quick has no developer API in scope. Lineage only.
+
+  - id: kiro
+    name: Kiro (formerly Q Developer IDE plugins and CodeWhisperer)
+    layer: assistants
+    lineage: [codewhisperer, q-developer-ide, kiro]
+    demos: []
+    slides: [lineage.retrieval_assistants]
+    covered: false
+    reason: An IDE, not a service API. Lineage only.
+
+  - id: ai-hardware
+    name: Trainium, Inferentia and the Neuron SDK
+    layer: ml-platform
+    lineage: []
+    demos: []
+    slides: []
+    covered: false
+    reason: Accelerator hardware is outside an agent-building workshop; mentioned in the glossary.
+
+  # ---- Identity and operations ------------------------------------------------
+  - id: iam-sts
+    name: IAM and STS (authentication versus authorisation)
+    layer: identity
+    lineage: [iam-sts]
+    demos: [aws-identity]
+    slides: [appendix.identity]
+    covered: true
+
+  - id: pricing
+    name: AWS Price List API and cost per successful task
+    layer: operations
+    lineage: [bedrock-service-tiers]
+    demos: [cost]
+    slides: [appendix.cost]
+    covered: true
+
+  # ---- Local -------------------------------------------------------------------
+  - id: localstack
+    name: LocalStack for AWS (authenticated image, plans)
+    layer: local
+    lineage: [localstack-auth-token, localstack-community-image]
+    demos: [localstack, decision]
+    slides: [localstack.coverage, localstack.demo]
+    covered: true
+
+  - id: localstack-ai
+    name: LocalStack AI emulation (Bedrock via Ollama, Transcribe, Textract, SageMaker)
+    layer: local
+    lineage: [localstack-bedrock, localstack-ai-services]
+    demos: [localstack-ai]
+    slides: [localstack.coverage]
+    covered: true

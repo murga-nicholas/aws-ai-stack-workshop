@@ -1,0 +1,1378 @@
+# Lifecycle and lineage of every AWS AI name the workshop mentions.
+#
+# One record per thing. The CLI (`awsai-demo lineage`), the glossary, the
+# deck's lineage and timeline slides, and every demo's `lifecycle_refs`
+# read these records - so a date is corrected here, once.
+#
+# Dates are quoted ISO strings; reduced precision ("2025-05") is used when
+# AWS publishes only a month. `null` means "not announced", never "unknown
+# to us": if we do not know, the field says so in `note`.
+#
+# normalized_status: active | preview | maintenance | sunset | legacy |
+#                    end_of_life | renamed | moved
+# relation (to successors): rename | successor | migration | merged | moved |
+#                           built_on | none
+#
+# Verified 2026-10-05. Sources are the pages listed per record; see also
+# docs/research.md section 10. Launch dates of services that predate 2023
+# come from AWS launch announcements and were not re-verified on that date.
+
+schema_version: 1
+verified: "2026-10-05"
+
+records:
+
+  # ------------------------------------------------------------------
+  # Models and inference
+  # ------------------------------------------------------------------
+  - id: bedrock
+    name: Amazon Bedrock
+    former_names: []
+    entity_type: service
+    scope: Managed access to foundation models and the surrounding building blocks
+    official_status: Generally available
+    normalized_status: active
+    launched: "2023-09-28"
+    announced: "2023-04"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://aws.amazon.com/about-aws/whats-new/2023/09/amazon-bedrock-generally-available
+    note: Preview from April 2023; GA in us-east-1 and us-west-2.
+
+  - id: invoke-model-api
+    name: InvokeModel API
+    former_names: []
+    entity_type: api
+    scope: bedrock-runtime InvokeModel and InvokeModelWithResponseStream
+    official_status: Supported
+    normalized_status: active
+    launched: "2023-09-28"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: [converse-api]
+    relation: successor
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/doc-history.html
+    note: Still supported. The request body is provider-specific; Converse is the uniform successor for new code.
+
+  - id: converse-api
+    name: Converse API
+    former_names: []
+    entity_type: api
+    scope: bedrock-runtime Converse and ConverseStream
+    official_status: Supported
+    normalized_status: active
+    launched: "2024-05-30"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html
+    note: One request shape for every model; tool use, documents, images, guardrails.
+
+  - id: bedrock-mantle
+    name: bedrock-mantle endpoint
+    former_names: []
+    entity_type: endpoint
+    scope: OpenAI-compatible Responses and Chat Completions, Anthropic Messages, at bedrock-mantle.{region}.api.aws
+    official_status: Supported; bedrock-runtime recommended for new integrations
+    normalized_status: active
+    launched: "2025-12-03"
+    announced: null
+    effective: "2026-09-15"
+    end_of_support: null
+    successors: [bedrock-runtime-openai]
+    relation: migration
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/doc-history.html
+      - https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-bedrock-responses-api-from-openai
+    note: On 2026-09-15 AWS made bedrock-runtime the recommended path and redirected the mantle-named pages.
+
+  - id: bedrock-runtime-openai
+    name: OpenAI-compatible APIs on bedrock-runtime
+    former_names: []
+    entity_type: endpoint
+    scope: https://bedrock-runtime.{region}.amazonaws.com/openai/v1
+    official_status: Recommended
+    normalized_status: active
+    launched: "2026-08-15"
+    announced: null
+    effective: "2026-09-15"
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/doc-history.html
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/inference-chat-completions.html
+    note: Guidance to prefer bedrock-runtime began 2026-08-15 and was completed 2026-09-15.
+
+  - id: bedrock-api-keys
+    name: Amazon Bedrock API keys
+    former_names: []
+    entity_type: feature
+    scope: Short- and long-term bearer tokens for the Bedrock APIs
+    official_status: Generally available
+    normalized_status: active
+    launched: "2025-07-07"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/doc-history.html
+    note: IAM can restrict them with bedrock:CallWithBearerToken and the bedrock:bearerTokenType condition key.
+
+  - id: bedrock-model-lifecycle
+    name: Bedrock model lifecycle (Active, Legacy, EOL)
+    former_names: []
+    entity_type: feature
+    scope: modelLifecycle field in ListFoundationModels and GetFoundationModel
+    official_status: New policy for models launched on or after 2026-09-07
+    normalized_status: active
+    launched: null
+    announced: null
+    effective: "2026-09-07"
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle.html
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html
+    note: Legacy means no new customers, possible loss of access after 15 idle days, no new Provisioned Throughput.
+
+  - id: bedrock-inference-profiles
+    name: Cross-Region inference profiles
+    former_names: []
+    entity_type: feature
+    scope: us., eu., apac. and global. inference profiles
+    official_status: Generally available
+    normalized_status: active
+    launched: "2024-08"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html
+    note: A global. profile does not keep data inside one geography; the Price List shows in-Region tokens 10% dearer than global for Nova 2 Lite.
+
+  - id: bedrock-service-tiers
+    name: Bedrock inference service tiers
+    former_names: []
+    entity_type: feature
+    scope: Standard, Flex, Priority and Reserved tiers for on-demand inference
+    official_status: Generally available
+    normalized_status: active
+    launched: "2025-11-18"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/doc-history.html
+    note: Flex and Priority 2025-11-18; Reserved 2025-11-26.
+
+  - id: titan-text
+    name: Amazon Titan Text models
+    former_names: []
+    entity_type: model
+    scope: Titan Text Express, Lite and Premier
+    official_status: Retired; Titan Text Premier no longer available
+    normalized_status: end_of_life
+    launched: "2023-09-28"
+    announced: null
+    effective: "2026-07"
+    end_of_support: "2026-07"
+    successors: [nova-v1]
+    relation: successor
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html
+    note: Titan Text Embeddings V2 is a separate, still-supported embedding model.
+
+  - id: titan-embeddings-v2
+    name: Amazon Titan Text Embeddings V2
+    former_names: []
+    entity_type: model
+    scope: amazon.titan-embed-text-v2:0
+    official_status: Active
+    normalized_status: active
+    launched: "2024-04"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html
+    note: A supported embedding model for managed knowledge bases.
+
+  - id: nova-v1
+    name: Amazon Nova (first generation)
+    former_names: []
+    entity_type: model
+    scope: Nova Micro, Lite, Pro, Premier, Canvas, Reel, Sonic
+    official_status: Canvas and Reel EOL 2026-09-30; Sonic v1 EOL 2026-09-14; Premier legacy
+    normalized_status: legacy
+    launched: "2024-12-03"
+    announced: "2026-03-13"
+    effective: "2026-03-13"
+    end_of_support: "2026-09-30"
+    successors: [nova-2]
+    relation: successor
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html
+    note: Micro, Lite and Pro v1 still listed by ListFoundationModels on 2026-10-05; check modelLifecycle per model.
+
+  - id: nova-2
+    name: Amazon Nova 2
+    former_names: []
+    entity_type: model
+    scope: Nova 2 Lite, Pro, Sonic, multimodal embeddings
+    official_status: Active
+    normalized_status: active
+    launched: "2025-12-02"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards.html
+    note: Nova 2 Lite answers Converse on the workshop account, but no Nova model supports CountTokens, so it is not the tested default.
+
+  - id: claude-sonnet-4
+    name: Anthropic Claude Sonnet 4 on Bedrock
+    former_names: []
+    entity_type: model
+    scope: anthropic.claude-sonnet-4-20250514-v1:0
+    official_status: Legacy; public extended access from 2026-07-14
+    normalized_status: legacy
+    launched: "2025-05-22"
+    announced: "2026-04-14"
+    effective: "2026-04-14"
+    end_of_support: "2026-10-14"
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html
+    note: An example of a popular model reaching EOL nine days after the workshop date.
+
+  - id: claude-haiku-4-5
+    name: Anthropic Claude Haiku 4.5 on Bedrock
+    former_names: []
+    entity_type: model
+    scope: anthropic.claude-haiku-4-5-20251001-v1:0 via global. and us. inference profiles
+    official_status: Active
+    normalized_status: active
+    launched: "2025-10-15"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/doc-history.html
+    note: The workshop's tested default live model, because CountTokens can count its input exactly.
+
+  - id: guardrails
+    name: Amazon Bedrock Guardrails
+    former_names: []
+    entity_type: service
+    scope: Content, topic, word, PII, contextual grounding and Automated Reasoning checks; ApplyGuardrail
+    official_status: Generally available
+    normalized_status: active
+    launched: "2024-04-23"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/doc-history.html
+    note: Automated Reasoning checks 2025-08-05; organization-wide sharing 2025-11-21.
+
+  - id: comprehend-prompt-safety
+    name: Amazon Comprehend Prompt Safety Classification
+    former_names: []
+    entity_type: feature
+    scope: Comprehend Topic Modeling, Event Detection and Prompt Safety Classification
+    official_status: Maintenance
+    normalized_status: maintenance
+    launched: null
+    announced: "2026-03-31"
+    effective: "2026-03-31"
+    end_of_support: null
+    successors: [guardrails]
+    relation: migration
+    sources:
+      - https://docs.aws.amazon.com/general/latest/gr/maintenance_services.html
+      - https://docs.aws.amazon.com/comprehend/latest/dg/comprehend-availability-change.html
+    note: AWS lists the three Comprehend features as one maintenance entry.
+
+  - id: prompt-management
+    name: Amazon Bedrock Prompt management
+    former_names: []
+    entity_type: feature
+    scope: Versioned prompts and prompt optimization
+    official_status: Generally available
+    normalized_status: active
+    launched: "2024-11"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/doc-history.html
+    note: Prompt optimization added 2024-11-20.
+
+  - id: bedrock-flows
+    name: Amazon Bedrock Flows
+    former_names: [Prompt Flows]
+    entity_type: feature
+    scope: Deployable graphs of prompts, knowledge bases, Lambda, conditions, loops and inline code
+    official_status: Generally available
+    normalized_status: active
+    launched: "2024-11-22"
+    announced: "2024-07"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/doc-history.html
+    note: The agent node calls an Agents Classic agent, so it inherits that service's restriction on new accounts.
+
+  - id: bedrock-studio
+    name: Amazon Bedrock Studio
+    former_names: []
+    entity_type: product
+    scope: Browser IDE for building Bedrock applications
+    official_status: Moved into SageMaker Unified Studio
+    normalized_status: moved
+    launched: "2024-05"
+    announced: null
+    effective: "2025-03-25"
+    end_of_support: null
+    successors: [sagemaker-unified-studio]
+    relation: moved
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/doc-history.html
+    note: Renamed "Amazon Bedrock in SageMaker Unified Studio".
+
+  - id: nova-act
+    name: Amazon Nova Act
+    former_names: []
+    entity_type: service
+    scope: Browser-automation agents; boto3 client nova-act
+    official_status: Generally available
+    normalized_status: active
+    launched: "2025-12"
+    announced: "2025-03"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/nova-act/latest/userguide/what-is-nova-act.html
+    note: Research preview March 2025; the AWS service with workflow definitions and runs followed at re:Invent 2025.
+
+  - id: model-customization
+    name: Bedrock model customization
+    former_names: []
+    entity_type: feature
+    scope: Fine-tuning, reinforcement fine-tuning, distillation, custom model import, on-demand custom deployment
+    official_status: Generally available
+    normalized_status: active
+    launched: "2023-09-28"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/doc-history.html
+    note: Distillation 2024-12-03; on-demand custom deployment 2025-07-16; reinforcement fine-tuning 2025-12-03; OpenAI-compatible fine-tuning APIs 2026-02-17.
+
+  # ------------------------------------------------------------------
+  # Agents
+  # ------------------------------------------------------------------
+  - id: agents-classic
+    name: Amazon Bedrock Agents Classic
+    former_names: [Agents for Amazon Bedrock, Amazon Bedrock Agents]
+    entity_type: service
+    scope: CreateAgent and InvokeInlineAgent for accounts without Agents activity in the previous 12 months
+    official_status: Maintenance (no longer open to new customers)
+    normalized_status: maintenance
+    launched: "2023-11-28"
+    announced: "2026-06-30"
+    effective: "2026-07-30"
+    end_of_support: null
+    successors: [agentcore-harness, agentcore-runtime]
+    relation: successor
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/agents-classic-maintenance-mode.html
+      - https://docs.aws.amazon.com/general/latest/gr/maintenance_services.html
+    note: Existing agents keep working, no EOL date; model catalog frozen at 2026-07-30; new accounts get HTTP 403.
+
+  - id: agents-classic-multi-agent
+    name: Bedrock Agents multi-agent collaboration
+    former_names: []
+    entity_type: feature
+    scope: Supervisor and routing collaborators in Agents Classic
+    official_status: Maintenance, with its parent service
+    normalized_status: maintenance
+    launched: "2024-12-03"
+    announced: "2026-06-30"
+    effective: "2026-07-30"
+    end_of_support: null
+    successors: [strands-multiagent]
+    relation: migration
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/agents-classic-maintenance-mode.html
+    note: The harness supports only agent-as-tool; full patterns need framework code on AgentCore Runtime.
+
+  - id: strands-agents
+    name: Strands Agents
+    former_names: []
+    entity_type: package
+    scope: strands-agents (Python); TypeScript in preview
+    official_status: Open source, 1.57.2
+    normalized_status: active
+    launched: "2025-05"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://pypi.org/project/strands-agents/
+    note: Originally built inside AWS for Amazon Q Developer; 1.0 in July 2025.
+
+  - id: strands-multiagent
+    name: Strands multi-agent patterns
+    former_names: []
+    entity_type: feature
+    scope: GraphBuilder, Swarm, agents-as-tools, A2A
+    official_status: Part of strands-agents
+    normalized_status: active
+    launched: "2025-07"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://pypi.org/project/strands-agents/
+    note: The code-first replacement for Agents Classic multi-agent collaboration.
+
+  - id: multi-agent-orchestrator
+    name: multi-agent-orchestrator
+    former_names: []
+    entity_type: package
+    scope: AWS Labs community framework (PyPI)
+    official_status: "Deprecated: use agent-squad"
+    normalized_status: renamed
+    launched: "2024"
+    announced: null
+    effective: "2025-05-05"
+    end_of_support: null
+    successors: [agent-squad]
+    relation: rename
+    sources:
+      - https://pypi.org/project/multi-agent-orchestrator/
+    note: Last release 0.1.15 on 2025-05-05.
+
+  - id: agent-squad
+    name: Agent Squad
+    former_names: [multi-agent-orchestrator]
+    entity_type: package
+    scope: agent-squad (PyPI), AWS Labs community framework
+    official_status: Open source, 1.1.4
+    normalized_status: active
+    launched: "2025"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://pypi.org/project/agent-squad/
+    note: Community-maintained; not Strands and not part of AgentCore.
+
+  - id: agentcore
+    name: Amazon Bedrock AgentCore
+    former_names: []
+    entity_type: service
+    scope: The agent platform as a whole
+    official_status: Generally available
+    normalized_status: active
+    launched: "2025-10-13"
+    announced: "2025-07"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html
+      - https://aws.amazon.com/about-aws/whats-new/2025/10/amazon-bedrock-agentcore-available
+    note: Preview July 2025; GA in nine Regions on 2025-10-13.
+
+  - id: agentcore-runtime
+    name: AgentCore Runtime
+    former_names: []
+    entity_type: feature
+    scope: Serverless microVM host for agents and tools; HTTP, MCP, A2A, AG-UI
+    official_status: Generally available
+    normalized_status: active
+    launched: "2025-10-13"
+    announced: "2025-07"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html
+    note: Sessions up to eight hours; direct code deployment 2025-11; shell commands 2026-03.
+
+  - id: agentcore-harness
+    name: AgentCore harness
+    former_names: []
+    entity_type: feature
+    scope: CreateHarness and InvokeHarness; config-defined managed agent
+    official_status: Generally available
+    normalized_status: active
+    launched: "2026-06-17"
+    announced: "2026-04"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://aws.amazon.com/about-aws/whats-new/2026/06/amazon-bedrock-agentcore-harness-generally-available/
+      - https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/harness.html
+    note: Public preview April 2026; GA at AWS Summit New York. AWS's recommended home for Agents Classic workloads.
+
+  - id: agentcore-memory
+    name: AgentCore Memory
+    former_names: []
+    entity_type: feature
+    scope: Short-term events and long-term records via strategies
+    official_status: Generally available
+    normalized_status: active
+    launched: "2025-10-13"
+    announced: "2025-07"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html
+    note: Episodic strategy 2025-12; direct long-term ingestion 2026-08.
+
+  - id: agentcore-gateway
+    name: AgentCore Gateway
+    former_names: []
+    entity_type: feature
+    scope: Lambda, OpenAPI, Smithy, API Gateway, MCP, HTTP and model-provider targets exposed as MCP tools
+    official_status: Generally available
+    normalized_status: active
+    launched: "2025-10-13"
+    announced: "2025-07"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html
+    note: The successor of Agents Classic action groups.
+
+  - id: agentcore-policy
+    name: Policy in AgentCore
+    former_names: []
+    entity_type: feature
+    scope: Cedar policies evaluated at the gateway on every tool call
+    official_status: Generally available
+    normalized_status: active
+    launched: "2026-03-03"
+    announced: "2025-12"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html
+      - https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-bedrock-agentcore-policy-evaluations-preview
+    note: Runs Bedrock Guardrails at the gateway since mid-2026.
+
+  - id: agentcore-identity
+    name: AgentCore Identity
+    former_names: []
+    entity_type: feature
+    scope: Workload identities, inbound auth, outbound OAuth2 and API-key credential providers, token vault
+    official_status: Generally available
+    normalized_status: active
+    launched: "2025-10-13"
+    announced: "2025-07"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html
+    note: On-behalf-of token exchange 2026-04.
+
+  - id: agentcore-code-interpreter
+    name: AgentCore Code Interpreter
+    former_names: []
+    entity_type: feature
+    scope: Sandboxed Python, JavaScript and Node.js execution
+    official_status: Generally available
+    normalized_status: active
+    launched: "2025-10-13"
+    announced: "2025-07"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html
+    note: Successor of the Agents Classic AMAZON.CodeInterpreter action group.
+
+  - id: agentcore-browser
+    name: AgentCore Browser
+    former_names: []
+    entity_type: feature
+    scope: Managed Chrome sessions for agents
+    official_status: Generally available
+    normalized_status: active
+    launched: "2025-10-13"
+    announced: "2025-07"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html
+    note: Web Bot Auth in preview; Chrome Enterprise policies 2026-03.
+
+  - id: agentcore-web-search
+    name: AgentCore Web Search
+    former_names: []
+    entity_type: feature
+    scope: Managed web search exposed as a Gateway connector
+    official_status: Generally available
+    normalized_status: active
+    launched: "2026-07"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html
+    note: The release notes list it in their July 2026 section.
+
+  - id: agentcore-payments
+    name: AgentCore payments
+    former_names: []
+    entity_type: feature
+    scope: Agent-initiated payments with Coinbase and Stripe
+    official_status: Preview
+    normalized_status: preview
+    launched: "2026-05"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html
+    note: Contract-only in this workshop; costs cannot be bounded.
+
+  - id: agentcore-observability
+    name: AgentCore Observability
+    former_names: []
+    entity_type: feature
+    scope: OpenTelemetry traces and trajectories in CloudWatch
+    official_status: Generally available
+    normalized_status: active
+    launched: "2025-10-13"
+    announced: "2025-07"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html
+    note: Cross-account monitoring 2026-04.
+
+  - id: agentcore-evaluations
+    name: AgentCore Evaluations
+    former_names: []
+    entity_type: feature
+    scope: Built-in, custom code-based and third-party evaluators; online and batch
+    official_status: Generally available
+    normalized_status: active
+    launched: "2026-03-31"
+    announced: "2025-12"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html
+    note: Preview December 2025.
+
+  - id: agentcore-optimization
+    name: AgentCore optimization loop
+    former_names: []
+    entity_type: feature
+    scope: Recommendations, batch evaluations, A/B tests; failure insights
+    official_status: Generally available; failure insights in preview
+    normalized_status: active
+    launched: "2026-07"
+    announced: "2026-04"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html
+    note: Public preview April 2026; listed as GA in the July 2026 section of the release notes.
+
+  - id: agent-registry
+    name: AWS Agent Registry
+    former_names: [AgentCore Registry]
+    entity_type: service
+    scope: Governed catalog of agents, tools, skills and MCP servers; agent-registry namespace
+    official_status: Generally available
+    normalized_status: active
+    launched: "2026-08"
+    announced: "2026-04"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/registry.html
+    note: Preview as AgentCore Registry in April 2026; launched under its own namespace and GA in August 2026.
+
+  - id: agentcore-starter-toolkit
+    name: bedrock-agentcore-starter-toolkit
+    former_names: []
+    entity_type: package
+    scope: The Python CLI that preceded the AgentCore CLI
+    official_status: Still published (0.3.13)
+    normalized_status: active
+    launched: "2025-07"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: [agentcore-cli]
+    relation: successor
+    sources:
+      - https://pypi.org/project/bedrock-agentcore-starter-toolkit/
+    note: Documentation now leads with the AgentCore CLI.
+
+  - id: agentcore-cli
+    name: AgentCore CLI
+    former_names: []
+    entity_type: package
+    scope: agentcore command (Node.js)
+    official_status: Generally available (v0.4.0)
+    normalized_status: active
+    launched: "2026-03"
+    announced: "2026-02"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html
+    note: Can import Agents Classic configurations.
+
+  - id: mcp
+    name: Model Context Protocol
+    former_names: []
+    entity_type: api
+    scope: Agent-to-tool protocol; mcp Python SDK
+    official_status: Open standard
+    normalized_status: active
+    launched: "2024-11"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://pypi.org/project/mcp/
+    note: Strands 1.57 resolves mcp 2.1.x (it pins below 2.2).
+
+  - id: aws-mcp-server
+    name: AWS MCP Server
+    former_names: []
+    entity_type: service
+    scope: Managed MCP server giving coding agents audited access to AWS APIs
+    official_status: Generally available
+    normalized_status: active
+    launched: "2026-05-06"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://aws.amazon.com/about-aws/whats-new/2026/05/aws-mcp-server/
+    note: Part of the Agent Toolkit for AWS; available in eight Regions by October 2026.
+
+  - id: a2a
+    name: Agent2Agent protocol
+    former_names: []
+    entity_type: api
+    scope: Agent-to-agent protocol; a2a-sdk
+    official_status: Open standard
+    normalized_status: active
+    launched: "2025-04"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://pypi.org/project/a2a-sdk/
+    note: Strands' A2A module requires a2a-sdk 0.3.x; the 1.x SDK is not compatible with it.
+
+  # ------------------------------------------------------------------
+  # Data and retrieval
+  # ------------------------------------------------------------------
+  - id: knowledge-bases
+    name: Amazon Bedrock Knowledge Bases
+    former_names: [Knowledge Bases for Amazon Bedrock]
+    entity_type: feature
+    scope: Managed RAG with a vector store you choose
+    official_status: Generally available
+    normalized_status: active
+    launched: "2023-11-28"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/doc-history.html
+    note: Not affected by the Agents Classic maintenance mode.
+
+  - id: managed-knowledge-base
+    name: Amazon Bedrock Managed Knowledge Base
+    former_names: []
+    entity_type: feature
+    scope: Knowledge base type MANAGED; Bedrock operates the vector store; agentic retrieval
+    official_status: Generally available
+    normalized_status: active
+    launched: "2026-06-17"
+    announced: "2026-03-02"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://aws.amazon.com/blogs/aws/introducing-amazon-bedrock-managed-knowledge-base-for-faster-more-accurate-enterprise-ai-applications/
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/doc-history.html
+    note: Fully managed knowledge bases appeared in the user guide on 2026-03-02; the Managed Knowledge Base launched GA on 2026-06-17.
+
+  - id: kendra
+    name: Amazon Kendra
+    former_names: []
+    entity_type: service
+    scope: Enterprise search
+    official_status: Maintenance (no longer open to new customers)
+    normalized_status: maintenance
+    launched: "2020-05"
+    announced: "2026-06-30"
+    effective: "2026-07-30"
+    end_of_support: null
+    successors: [managed-knowledge-base]
+    relation: migration
+    sources:
+      - https://docs.aws.amazon.com/kendra/latest/dg/kendra-availability-change.html
+    note: Maintenance effective 2026-06-30; closed to new customers 2026-07-30.
+
+  - id: s3-vectors
+    name: Amazon S3 Vectors
+    former_names: []
+    entity_type: feature
+    scope: Vector buckets and indexes in S3
+    official_status: Generally available
+    normalized_status: active
+    launched: "2025-12-02"
+    announced: "2025-07"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-s3-vectors-generally-available/
+    note: Preview July 2025; supported Knowledge Bases vector store.
+
+  - id: bedrock-data-automation
+    name: Amazon Bedrock Data Automation
+    former_names: []
+    entity_type: feature
+    scope: Multimodal extraction with blueprints
+    official_status: Generally available
+    normalized_status: active
+    launched: "2025-03-03"
+    announced: "2024-12-04"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/bedrock/latest/userguide/doc-history.html
+    note: Synchronous invocation 2025-11-20.
+
+  - id: textract
+    name: Amazon Textract
+    former_names: []
+    entity_type: service
+    scope: Document text and structure extraction
+    official_status: Active
+    normalized_status: active
+    launched: "2019-05"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/textract/latest/dg/what-is.html
+    note: Bedrock Data Automation is the generative alternative for documents.
+
+  - id: transcribe
+    name: Amazon Transcribe
+    former_names: []
+    entity_type: service
+    scope: Speech to text
+    official_status: Active
+    normalized_status: active
+    launched: "2017-11"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/transcribe/latest/dg/what-is.html
+    note: Emulated by LocalStack on the free Hobby plan.
+
+  - id: polly
+    name: Amazon Polly
+    former_names: []
+    entity_type: service
+    scope: Text to speech
+    official_status: Active
+    normalized_status: active
+    launched: "2016-11"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/polly/latest/dg/what-is.html
+    note: null
+
+  - id: translate
+    name: Amazon Translate
+    former_names: []
+    entity_type: service
+    scope: Machine translation
+    official_status: Active
+    normalized_status: active
+    launched: "2017-11"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/translate/latest/dg/what-is.html
+    note: null
+
+  - id: comprehend
+    name: Amazon Comprehend
+    former_names: []
+    entity_type: service
+    scope: Entities, PII, sentiment, key phrases, classification
+    official_status: Active; three features in maintenance
+    normalized_status: active
+    launched: "2017-11"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/comprehend/latest/dg/comprehend-availability-change.html
+    note: See comprehend-prompt-safety for the features in maintenance.
+
+  - id: rekognition-maintenance-features
+    name: Amazon Rekognition Streaming Events and Batch Image Content Moderation
+    former_names: []
+    entity_type: feature
+    scope: Two Rekognition features; the rest of Rekognition is active
+    official_status: Maintenance
+    normalized_status: maintenance
+    launched: null
+    announced: "2026-03-31"
+    effective: "2026-03-31"
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/general/latest/gr/maintenance_services.html
+    note: null
+
+  - id: forecast
+    name: Amazon Forecast
+    former_names: []
+    entity_type: service
+    scope: Time-series forecasting
+    official_status: Maintenance
+    normalized_status: maintenance
+    launched: "2019-08"
+    announced: "2024-07-29"
+    effective: "2024-07-29"
+    end_of_support: null
+    successors: [sagemaker-ai]
+    relation: migration
+    sources:
+      - https://docs.aws.amazon.com/general/latest/gr/maintenance_services.html
+    note: AWS recommends SageMaker Canvas.
+
+  - id: fraud-detector
+    name: Amazon Fraud Detector
+    former_names: []
+    entity_type: service
+    scope: Fraud detection models
+    official_status: Sunset
+    normalized_status: sunset
+    launched: "2020-07"
+    announced: "2025-10-07"
+    effective: "2025-10-07"
+    end_of_support: "2026-10-07"
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/frauddetector/latest/ug/frauddetector-availability-change.html
+    note: End of support two days after the workshop date.
+
+  - id: lookout-for-equipment
+    name: Amazon Lookout for Equipment
+    former_names: []
+    entity_type: service
+    scope: Equipment anomaly detection
+    official_status: Sunset
+    normalized_status: sunset
+    launched: "2021-04"
+    announced: "2025-10-07"
+    effective: "2025-10-07"
+    end_of_support: "2026-10-07"
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/general/latest/gr/sunset_services.html
+    note: null
+
+  - id: monitron
+    name: Amazon Monitron
+    former_names: []
+    entity_type: service
+    scope: Equipment monitoring
+    official_status: Maintenance
+    normalized_status: maintenance
+    launched: "2020-12"
+    announced: "2024-10-31"
+    effective: "2024-10-31"
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/general/latest/gr/maintenance_services.html
+    note: null
+
+  - id: codeguru-reviewer
+    name: Amazon CodeGuru Reviewer
+    former_names: []
+    entity_type: service
+    scope: Automated code review
+    official_status: Maintenance
+    normalized_status: maintenance
+    launched: "2020-06"
+    announced: "2025-10-07"
+    effective: "2025-10-07"
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/codeguru/latest/reviewer-ug/codeguru-reviewer-availability-change.html
+    note: null
+
+  # ------------------------------------------------------------------
+  # Platform and assistants
+  # ------------------------------------------------------------------
+  - id: sagemaker-ai
+    name: Amazon SageMaker AI
+    former_names: [Amazon SageMaker]
+    entity_type: service
+    scope: Train, tune and host your own models; JumpStart, HyperPod, endpoints
+    official_status: Generally available
+    normalized_status: active
+    launched: "2017-11"
+    announced: null
+    effective: "2024-12-03"
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/sagemaker/latest/dg/whatis.html
+    note: Renamed from Amazon SageMaker on 2024-12-03, when "SageMaker" became the umbrella for the unified data and AI platform.
+
+  - id: sagemaker-ai-maintenance-features
+    name: SageMaker AI features in maintenance
+    former_names: []
+    entity_type: feature
+    scope: A2I, Clarify, Debugger, GeoSpatial, Ground Truth, Model Monitor, Role Manager, Studio Lab
+    official_status: Maintenance
+    normalized_status: maintenance
+    launched: null
+    announced: "2026-06-30"
+    effective: "2026-06-30"
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/general/latest/gr/maintenance_services.html
+    note: Eight features. Profiler and the public Mechanical Turk workforce are in sunset instead.
+
+  - id: sagemaker-profiler
+    name: SageMaker AI Profiler
+    former_names: []
+    entity_type: feature
+    scope: Training profiler
+    official_status: Sunset
+    normalized_status: sunset
+    launched: null
+    announced: "2026-06-30"
+    effective: "2026-07-30"
+    end_of_support: "2027-06-30"
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/general/latest/gr/sunset_services.html
+    note: null
+
+  - id: sagemaker-unified-studio
+    name: Amazon SageMaker Unified Studio
+    former_names: []
+    entity_type: product
+    scope: Unified IDE for data, analytics and AI, including Bedrock
+    official_status: Generally available
+    normalized_status: active
+    launched: "2025-03"
+    announced: "2024-12-03"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/what-is-sagemaker-unified-studio.html
+    note: Hosts what was Bedrock Studio.
+
+  - id: q-business
+    name: Amazon Q Business
+    former_names: []
+    entity_type: product
+    scope: Employee assistant over enterprise data
+    official_status: Maintenance (no longer open to new customers)
+    normalized_status: maintenance
+    launched: "2024-04-30"
+    announced: "2026-06-30"
+    effective: "2026-07-30"
+    end_of_support: null
+    successors: [amazon-quick]
+    relation: migration
+    sources:
+      - https://docs.aws.amazon.com/amazonq/latest/qbusiness-ug/qbusiness-availability-change.html
+    note: Migration uses Bring Your Own Index; Q Apps become Quick Flows.
+
+  - id: amazon-quick
+    name: Amazon Quick
+    former_names: [Amazon Quick Suite]
+    entity_type: product
+    scope: Quick Sight, Flows, Automate, Research, Spaces
+    official_status: Generally available
+    normalized_status: active
+    launched: "2025-10"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/amazonq/latest/qbusiness-ug/qbusiness-availability-change.html
+    note: The successor of Q Business; no developer API is demonstrated in this workshop.
+
+  - id: codewhisperer
+    name: Amazon CodeWhisperer
+    former_names: []
+    entity_type: product
+    scope: AI coding assistant
+    official_status: Renamed
+    normalized_status: renamed
+    launched: "2022-06"
+    announced: null
+    effective: "2024-04-30"
+    end_of_support: null
+    successors: [q-developer-ide]
+    relation: rename
+    sources:
+      - https://aws.amazon.com/blogs/devops/amazon-q-developer-end-of-support-announcement/
+    note: null
+
+  - id: q-developer-ide
+    name: Amazon Q Developer IDE plugins
+    former_names: [Amazon CodeWhisperer]
+    entity_type: product
+    scope: IDE plugins and paid subscriptions; the console experience is not affected
+    official_status: Sunset
+    normalized_status: sunset
+    launched: "2024-04-30"
+    announced: "2026-04-30"
+    effective: "2026-05-15"
+    end_of_support: "2027-04-30"
+    successors: [kiro]
+    relation: migration
+    sources:
+      - https://docs.aws.amazon.com/general/latest/gr/sunset_services.html
+      - https://aws.amazon.com/blogs/devops/amazon-q-developer-end-of-support-announcement/
+    note: New sign-ups blocked from 2026-05-15.
+
+  - id: kiro
+    name: Kiro
+    former_names: []
+    entity_type: product
+    scope: Spec-driven agentic IDE and CLI
+    official_status: Generally available
+    normalized_status: active
+    launched: "2025-11-17"
+    announced: "2025-07-14"
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://aws.amazon.com/blogs/devops/amazon-q-developer-end-of-support-announcement/
+    note: Preview 2025-07-14.
+
+  - id: iam-sts
+    name: AWS IAM and STS
+    former_names: []
+    entity_type: service
+    scope: Who the caller is (STS) versus what it may do (IAM policies)
+    official_status: Active
+    normalized_status: active
+    launched: "2011"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.aws.amazon.com/STS/latest/APIReference/API_GetCallerIdentity.html
+    note: GetCallerIdentity needs no permission; a successful call proves authentication only.
+
+  # ------------------------------------------------------------------
+  # Local development
+  # ------------------------------------------------------------------
+  - id: localstack-community-image
+    name: LocalStack Community image
+    former_names: []
+    entity_type: product
+    scope: localstack/localstack without an auth token
+    official_status: Merged into one authenticated image
+    normalized_status: moved
+    launched: "2017"
+    announced: null
+    effective: "2026-03-23"
+    end_of_support: null
+    successors: [localstack-auth-token]
+    relation: merged
+    sources:
+      - https://blog.localstack.cloud/localstack-for-aws-release-2026-03-0/
+    note: A temporary bypass existed until 2026-04-06.
+
+  - id: localstack-auth-token
+    name: LocalStack for AWS (authenticated image)
+    former_names: [LocalStack Pro]
+    entity_type: product
+    scope: localstack/localstack 2026.x with LOCALSTACK_AUTH_TOKEN; Hobby, Base, Ultimate, Enterprise plans
+    official_status: Current
+    normalized_status: active
+    launched: "2026-03-23"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://blog.localstack.cloud/localstack-for-aws-release-2026-03-0/
+      - https://www.localstack.cloud/pricing
+    note: Calendar versioning; 2026.09.0 current on 2026-10-05; Hobby is free for non-commercial use only.
+
+  - id: localstack-bedrock
+    name: LocalStack Bedrock emulation
+    former_names: []
+    entity_type: feature
+    scope: bedrock (6/108 ops) and bedrock-runtime (Converse, InvokeModel, InvokeModelWithBidirectionalStream) via Ollama
+    official_status: Available from the Ultimate plan
+    normalized_status: active
+    launched: "2024-11"
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.localstack.cloud/aws/services/bedrock/
+    note: Text models only; DEFAULT_BEDROCK_MODEL, BEDROCK_PREWARM, BEDROCK_PULL_MODELS.
+
+  - id: localstack-ai-services
+    name: LocalStack AI service emulation
+    former_names: []
+    entity_type: feature
+    scope: SageMaker AI and Textract (Ultimate); Transcribe and OpenSearch (Hobby)
+    official_status: Available per plan
+    normalized_status: active
+    launched: null
+    announced: null
+    effective: null
+    end_of_support: null
+    successors: []
+    relation: none
+    sources:
+      - https://docs.localstack.cloud/aws/services/sagemaker/
+      - https://docs.localstack.cloud/aws/services/transcribe/
+      - https://docs.localstack.cloud/aws/services/textract/
+      - https://docs.localstack.cloud/aws/services/opensearch/
+    note: AgentCore, Agents Classic, Knowledge Bases, Guardrails, S3 Vectors, Comprehend and Kendra are not emulated.

@@ -1,0 +1,92 @@
+# The facts the slides are allowed to quote.
+#
+# `deck/collect_facts.py` must produce every key below in deck/facts.json,
+# under `offline` or `live` as stated, from the named demo run. Slides
+# reference them as {facts.<lane>.<key>} (for example
+# {facts.offline.scenario.total}). The deck build fails on a key that is
+# missing here or missing from facts.json. Values are copied, never
+# recomputed in the deck.
+#
+# Types: integer (rendered with thousands separators), identifier (an
+# integer or string rendered verbatim, such as a process id), string,
+# boolean (rendered yes/no), table.
+#
+# `source` is the demo command and the path inside its DemoResult (or a
+# derived value whose derivation is stated in `how`). `type` is the JSON type.
+
+schema_version: 1
+
+offline:
+  scenario.budget:            {source: "decision", how: "data.scenario.budget", type: integer}
+  scenario.staffing_total:    {source: "decision", how: "data.scenario.staffing_total", type: integer}
+  scenario.platform_total:    {source: "decision", how: "data.scenario.platform_total", type: integer}
+  scenario.total:             {source: "decision", how: "data.scenario.total", type: integer}
+  scenario.headroom:          {source: "decision", how: "data.scenario.headroom", type: integer}
+
+  decision.pause_pid:         {source: "decision --simulate-approval", how: "pid of the process that paused", type: identifier}
+  decision.resume_pid:        {source: "decision --simulate-approval", how: "pid of the resume worker", type: identifier}
+  decision.files_read:        {source: "decision --simulate-approval", how: "count of files the resume worker read", type: integer}
+  decision.effects_after_resume: {source: "decision --simulate-approval", how: "rows in the sink after the resume", type: integer}
+  decision.effects_after_replay: {source: "decision --simulate-approval", how: "rows in the sink after the replay", type: integer}
+  decision.approval_source:   {source: "decision --simulate-approval", how: "data.approval_source", type: string}
+  decision.matrix:            {source: "decision --simulate-approval", how: "data.responsibility_matrix as rows [concern, lane_a, lane_b, lane_c]", type: table}
+  decision.lanes:             {source: "decision --simulate-approval", how: "rows [lane, implementation, mode, status]", type: table}
+
+  retrieval.injection_retrieved: {source: "knowledge-bases", how: "injection case: untrusted document retrieved", type: boolean}
+  retrieval.injection_obeyed:    {source: "knowledge-bases", how: "injection case: instruction obeyed", type: boolean}
+  retrieval.answerable_citations: {source: "knowledge-bases", how: "section ids cited for the answerable case, comma-joined", type: string}
+
+  evaluation.total:           {source: "evaluation", how: "number of cases", type: integer}
+  evaluation.passed:          {source: "evaluation", how: "cases passed", type: integer}
+  evaluation.failed_case:     {source: "evaluation", how: "name of the case that fails on purpose", type: string}
+
+  observability.span_names:   {source: "observability", how: "distinct span names in tree order, comma-joined", type: string}
+
+  policy.denied_reason:       {source: "agentcore-gateway", how: "Cedar decision reason for the unapproved accept_proposal call", type: string}
+  mcp.tools:                  {source: "agentcore-gateway", how: "tool names listed over MCP, comma-joined", type: string}
+
+  runtime.ping_status:        {source: "agentcore-runtime", how: "JSON status returned by GET /ping", type: string}
+
+  lineage.maintenance_count:  {source: "lineage", how: "records with normalized_status maintenance", type: integer}
+  lineage.sunset_count:       {source: "lineage", how: "records with normalized_status sunset", type: integer}
+  lineage.record_count:       {source: "lineage", how: "all records", type: integer}
+
+  cost.tiers:                 {source: "cost", how: "rows [tier, routing, usd_per_successful_run] from the snapshot", type: table}
+  cost.snapshot_read_at:      {source: "cost", how: "pricing snapshot read_at date", type: string}
+
+  localstack.advertised:      {source: "localstack-ai", how: "rows [service, plan, operations] from the advertised table", type: table}
+
+  packages.boto3:             {source: "doctor", how: "installed version", type: string}
+  packages.strands_agents:    {source: "doctor", how: "installed version of strands-agents", type: string}
+  packages.bedrock_agentcore: {source: "doctor", how: "installed version", type: string}
+  packages.a2a_sdk:           {source: "doctor", how: "installed version", type: string}
+  packages.mcp:               {source: "doctor", how: "installed version", type: string}
+  demo_count:                 {source: "list", how: "number of registry rows", type: integer}
+
+live:
+  catalog.region:             {source: "model-lifecycle --execution live", how: "region used", type: string}
+  catalog.model_count:        {source: "model-lifecycle --execution live", how: "ListFoundationModels count", type: integer}
+  catalog.active_count:       {source: "model-lifecycle --execution live", how: "status ACTIVE", type: integer}
+  catalog.legacy_count:       {source: "model-lifecycle --execution live", how: "status LEGACY", type: integer}
+  catalog.provider_count:     {source: "model-lifecycle --execution live", how: "distinct providers", type: integer}
+  catalog.global_profiles:    {source: "model-lifecycle --execution live", how: "inference profiles whose id starts with global.", type: integer}
+  catalog.read_at:            {source: "model-lifecycle --execution live", how: "UTC date of the run", type: string}
+
+  converse.model:             {source: "bedrock-runtime --execution live", how: "requested model id", type: string}
+  converse.input_tokens:      {source: "bedrock-runtime --execution live", how: "usage.input_tokens of the text Converse", type: integer}
+  converse.output_tokens:     {source: "bedrock-runtime --execution live", how: "usage.output_tokens of the text Converse", type: integer}
+  converse.estimated_usd:     {source: "bedrock-runtime --execution live", how: "evidence.estimated_cost_usd, 6 decimals", type: string}
+
+  identity.authenticated:     {source: "aws-identity --execution live", how: "STS succeeded with the default credentials", type: boolean}
+  identity.principal_type:    {source: "aws-identity --execution live", how: "user, assumed-role, ...", type: string}
+  identity.bedrock_probe:     {source: "aws-identity --execution live", how: "status of the ListFoundationModels probe", type: string}
+  identity.denied_authenticated: {source: "aws-identity --execution live --profile aila-sandbox", how: "STS succeeded for that principal", type: boolean}
+  identity.denied_probe:      {source: "aws-identity --execution live --profile aila-sandbox", how: "status of the probe for a principal without Bedrock permissions", type: string}
+  identity.denied_code:       {source: "aws-identity --execution live --profile aila-sandbox", how: "error.code of that probe", type: string}
+
+  guardrail.input_action:     {source: "guardrails --execution live --allow-create", how: "ApplyGuardrail action on the INPUT case", type: string}
+  guardrail.output_action:    {source: "guardrails --execution live --allow-create", how: "ApplyGuardrail action on the OUTPUT case", type: string}
+
+  kendra.list_indices_code:   {source: "kendra --execution live", how: "AWS error code returned by ListIndices (SubscriptionRequiredException for an account new to Kendra)", type: string}
+
+  agents.classic_listed:      {source: "agents-classic --execution live", how: "number of agents returned by ListAgents", type: integer}

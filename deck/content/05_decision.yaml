@@ -1,0 +1,88 @@
+schema_version: 1
+section: {id: decision, index: "05", title: The decision, minutes: [36, 42]}
+
+slides:
+  - id: decision.section
+    kind: section
+    eyebrow: the decision
+    title: One decision, three ways to build it
+    deck: "Cost a six-week support pilot, then refuse to accept it until a named human approves."
+    bullets:
+      - Same task, three implementations
+      - Who owns each responsibility
+      - What survives a crash
+
+  - id: decision.three_ways
+    kind: content
+    eyebrow: the decision / three implementations
+    title: Same task, same budget, three owners of the loop
+    deck: "The pilot costs {facts.offline.scenario.total} USD against {facts.offline.scenario.budget} USD; every lane must stop before accepting."
+    audience: [everyone]
+    layout: full
+    main:
+      - type: table
+        h: 3.0
+        source: {facts: offline.decision.lanes}
+        columns: [Lane, Implementation, Mode, Status]
+        widths: [1.4, 7.6, 3, 3]
+      - type: compare
+        h: 2.2
+        left:
+          title: Configure
+          items:
+            - "Agents Classic: closed to new accounts"
+            - "AgentCore harness: the recommended successor"
+        right:
+          title: Code
+          items:
+            - "Strands on AgentCore Runtime"
+            - "You own the loop, so you can prove what it did"
+    source_note: "Lanes A and B are request and stream contracts offline; lane C is real Strands execution with a scripted model."
+    run: [awsai-demo decision]
+
+  - id: decision.matrix
+    kind: content
+    eyebrow: the decision / responsibility matrix
+    title: Who owns each responsibility, lane by lane
+    deck: Moving from configuration to code moves work from AWS to you, and gives you the evidence.
+    audience: [architects, managers]
+    layout: full
+    main:
+      - type: matrix
+        h: 5.6
+        source: {facts: offline.decision.matrix}
+        columns: [Concern, "A: Agents Classic", "B: AgentCore harness", "C: Strands code"]
+    run: [awsai-demo decision]
+
+  - id: decision.recovery
+    kind: content
+    eyebrow: the decision / recovery
+    title: A second process resumes, and nothing runs twice
+    deck: The approval is bound to the proposal version; the effect is keyed by the business action.
+    audience: [developers, architects]
+    layout: main_rail
+    main:
+      - type: metrics
+        h: 1.6
+        items:
+          - {value: "{facts.offline.decision.pause_pid}", label: "process that paused"}
+          - {value: "{facts.offline.decision.resume_pid}", label: "process that resumed"}
+          - {value: "{facts.offline.decision.effects_after_resume}", label: "effects after resume"}
+          - {value: "{facts.offline.decision.effects_after_replay}", label: "effects after replay"}
+      - type: code
+        h: 3.4
+        ref: "src/awsai_demo/decision_demo.py#interrupt"
+      - type: source_note
+        text: "Approval source in this recorded run: {facts.offline.decision.approval_source}. A real run takes --approve --approver NAME."
+    rail:
+      - type: steps
+        h: 3.2
+        items:
+          - "The tool raises an interrupt; the session is saved"
+          - "Another OS process loads it and answers"
+          - "The sink commits once, keyed by the proposal version"
+          - "A replay finds the effect and does nothing"
+      - type: callout
+        tone: warning
+        text: "Resuming can re-enter the tool. Deduplicate where the effect is written."
+    run: ["awsai-demo decision --simulate-approval"]

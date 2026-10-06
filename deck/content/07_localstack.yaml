@@ -1,0 +1,70 @@
+schema_version: 1
+section: {id: localstack, index: "07", title: LocalStack, minutes: [47, 52]}
+
+slides:
+  - id: localstack.section
+    kind: section
+    eyebrow: localstack
+    title: Running AWS AI on your laptop, honestly
+    deck: An emulator answers, not AWS. The mode says so, and the plan decides what answers.
+    bullets:
+      - What changed in March 2026
+      - What is emulated, on which plan
+      - Running the demos against it
+
+  - id: localstack.coverage
+    kind: content
+    eyebrow: localstack / coverage
+    title: Your plan decides which AI services the emulator runs
+    deck: Since 2026-03-23 there is one image, and it needs an auth token.
+    audience: [developers, managers]
+    layout: main_rail
+    main:
+      - type: table
+        h: 3.6
+        source: {facts: offline.localstack.advertised}
+        columns: [Service, Plan, Operations emulated]
+        widths: [5, 2.6, 4.8]
+      - type: callout
+        tone: warning
+        text: "Not emulated: AgentCore, Agents Classic, Knowledge Bases, Guardrails, S3 Vectors, Comprehend, Kendra."
+    rail:
+      - type: lineage
+        h: 2.4
+        ids: [localstack-community-image]
+      - type: bullets
+        h: 1.8
+        size: 13
+        items:
+          - "Hobby is free, non-commercial"
+          - "Bedrock answers with Ollama models"
+          - "Calendar versions: 2026.09.0"
+    run: [awsai-demo localstack-ai]
+
+  - id: localstack.demo
+    kind: content
+    eyebrow: localstack / run it
+    title: Three steps from offline to the emulator
+    deck: The same command, a different lane, and a mode that tells you which one ran.
+    audience: [developers]
+    layout: main_rail
+    main:
+      - type: steps
+        h: 2.6
+        items:
+          - "Put LOCALSTACK_AUTH_TOKEN in .env (free Hobby token for personal use)"
+          - "docker compose -f docker-compose.localstack.yml up -d"
+          - "Run any demo with --execution emulator"
+      - type: table
+        h: 2.6
+        columns: [Mode, Means]
+        widths: [3.2, 9]
+        rows:
+          - [local_contract, "Real SDK code, synthetic response. The default offline lane."]
+          - [local_emulator, "LocalStack ran the API on localhost. Not AWS."]
+          - ["live_model / live_service", "AWS actually answered."]
+    rail:
+      - type: callout
+        tone: info
+        text: "In emulator mode the decision demo writes its approval sink to DynamoDB with a conditional put: the second write is refused by the emulator itself."
+    run: ["awsai-demo localstack --execution emulator", "awsai-demo decision --execution emulator"]

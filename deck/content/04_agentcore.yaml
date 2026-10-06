@@ -1,0 +1,254 @@
+schema_version: 1
+section: {id: agentcore, index: "04", title: AgentCore, minutes: [23, 36]}
+
+slides:
+  - id: agentcore.section
+    kind: section
+    eyebrow: agentcore
+    title: AgentCore runs agents you did not have to host
+    deck: Separate building blocks, any framework, any model. Use one or all of them.
+    bullets:
+      - Runtime and the harness
+      - Memory, Gateway and Policy, Identity
+      - Built-in tools
+      - Observability, evaluation, registry
+
+  - id: agentcore.map
+    kind: content
+    eyebrow: agentcore / the map
+    title: AgentCore building blocks, each usable on its own
+    deck: GA October 2025; harness, policy, evaluations and registry arrived in 2026.
+    audience: [everyone]
+    layout: full
+    main:
+      - type: table
+        h: 5.4
+        columns: [Building block, What it does, GA]
+        widths: [3.4, 9.6, 2.2]
+        rows:
+          - [Runtime, "Hosts your agent code in a microVM per session, up to 8 hours", "2025-10"]
+          - [Harness, "Runs an agent you define as configuration: model, prompt, tools", "2026-06"]
+          - [Memory, "Short-term events and long-term records extracted by strategies", "2025-10"]
+          - [Gateway, "Turns APIs, Lambda functions and MCP servers into MCP tools", "2025-10"]
+          - [Policy, "Cedar rules checked at the gateway on every tool call", "2026-03"]
+          - [Identity, "Who may call the agent, and what the agent may call", "2025-10"]
+          - ["Code Interpreter, Browser", "Sandboxed code and a managed Chrome session", "2025-10"]
+          - [Web Search, "Search as a gateway connector; queries stay in AWS", "2026-07"]
+          - [Observability, "OpenTelemetry traces and trajectories in CloudWatch", "2025-10"]
+          - [Evaluations, "Score sessions and traces, online or in batch", "2026-03"]
+          - [Agent Registry, "A governed catalog other teams search", "2026-08"]
+    source_note: "Payments (preview) is the twelfth block; this repo shows its request shape only."
+
+  - id: agentcore.runtime
+    kind: content
+    eyebrow: agentcore / runtime
+    title: Runtime hosts your agent behind two HTTP routes
+    deck: The same /invocations and /ping contract runs on your laptop and in AgentCore.
+    audience: [developers, architects]
+    layout: main_rail
+    main:
+      - type: code
+        h: 3.6
+        ref: "src/awsai_demo/agentcore_runtime_demo.py#app"
+        caption: "BedrockAgentCoreApp wraps the Strands agent from the previous section."
+      - type: metrics
+        h: 1.3
+        items:
+          - {value: "{facts.offline.runtime.ping_status}", label: "GET /ping on 127.0.0.1"}
+      - type: source_note
+        text: "Local run: the AgentCore Runtime contract on localhost, not AWS. Deploying needs a container or zip and an IAM role; this repo shows the request only."
+    rail:
+      - type: bullets
+        h: 3.4
+        size: 13
+        items:
+          - "Isolated microVM per session"
+          - "Sessions up to 8 hours"
+          - "HTTP, MCP, A2A and AG-UI"
+          - "Any framework, any model"
+          - "Deploy with the AgentCore CLI (GA v0.4.0)"
+    run: [awsai-demo agentcore-runtime]
+
+  - id: agentcore.harness
+    kind: content
+    eyebrow: agentcore / harness
+    title: The harness is Agents Classic, rebuilt on AgentCore
+    deck: Declare the model, prompt and tools; AWS runs the loop. GA on 2026-06-17.
+    audience: [architects, managers]
+    layout: full
+    main:
+      - type: table
+        h: 2.5
+        columns: [Agents Classic, AgentCore harness]
+        widths: [7, 8]
+        rows:
+          - ["Action groups (OpenAPI + Lambda)", "Gateway tools over MCP, or inline functions"]
+          - ["Return of control", "Inline function tool: the stream stops with toolUse"]
+          - ["Stage prompt overrides", "Not replicated: one system prompt"]
+          - ["Multi-agent collaboration", "Agent-as-tool only; full patterns need code"]
+      - type: code
+        h: 3.3
+        ref: "src/awsai_demo/agentcore_harness_demo.py#create-harness"
+    source_note: "Mapping from AWS's Agents Classic maintenance-mode guide. The create request is validated offline; it is not sent live, because session-lifetime and telemetry charges cannot be bounded per command."
+    run: [awsai-demo agentcore-harness]
+
+  - id: agentcore.memory
+    kind: content
+    eyebrow: agentcore / memory
+    title: Memory keeps the conversation and learns the facts
+    deck: Short-term memory is events you write; long-term memory is records AWS extracts.
+    audience: [developers, architects]
+    layout: full
+    main:
+      - type: diagram
+        h: 2.6
+        nodes:
+          - {id: agent, label: Agent, x: 0.0, y: 0.8, w: 2.0, h: 0.9}
+          - {id: events, label: "Short-term\nCreateEvent, ListEvents", x: 3.0, y: 0.8, w: 3.2, h: 0.9, kind: store}
+          - {id: strategy, label: "Strategies\nsemantic, summary,\npreference, episodic", x: 7.2, y: 0.6, w: 3.0, h: 1.3}
+          - {id: records, label: "Long-term\nRetrieveMemoryRecords", x: 11.2, y: 0.8, w: 3.2, h: 0.9, kind: store}
+        edges:
+          - {from: agent, to: events, label: write}
+          - {from: events, to: strategy, label: "async extraction", style: dashed}
+          - {from: strategy, to: records}
+      - type: bullets
+        h: 1.9
+        size: 14
+        items:
+          - "Scope records by actor and session namespaces; never mix users"
+          - "Strands can use AgentCore Memory as its session manager"
+          - "Extraction is asynchronous: a record is not readable the moment you write the event"
+    run: [awsai-demo agentcore-memory]
+
+  - id: agentcore.gateway
+    kind: content
+    eyebrow: agentcore / gateway and policy
+    title: Policy is checked outside the agent, on every tool call
+    deck: The gateway turns APIs into MCP tools; Cedar decides whether each call may run.
+    audience: [architects, developers]
+    layout: main_rail
+    main:
+      - type: diagram
+        h: 1.8
+        nodes:
+          - {id: agent, label: Agent, x: 0.0, y: 0.45, w: 1.8, h: 0.9}
+          - {id: gw, label: "Gateway\nMCP endpoint", x: 2.6, y: 0.45, w: 2.4, h: 0.9}
+          - {id: policy, label: "Policy\nCedar", x: 5.8, y: 0.45, w: 2.0, h: 0.9, kind: guard}
+          - {id: price, label: price_pilot, x: 8.6, y: 0.0, w: 2.4, h: 0.7}
+          - {id: accept, label: accept_proposal, x: 8.6, y: 1.1, w: 2.4, h: 0.7}
+        edges:
+          - {from: agent, to: gw}
+          - {from: gw, to: policy}
+          - {from: policy, to: price, label: permit}
+          - {from: policy, to: accept, label: deny, style: dashed}
+      - type: code
+        h: 3.6
+        ref: "src/awsai_demo/agentcore_gateway_demo.py#cedar-policy"
+        caption: "Evaluated locally with cedarpy, the same Cedar language AgentCore Policy uses."
+    rail:
+      - type: text
+        h: 2.0
+        size: 13
+        text: "Unapproved accept_proposal, decided by cedarpy: {facts.offline.policy.denied_reason}"
+      - type: callout
+        tone: success
+        text: "A model cannot talk its way past a check that runs outside its own code."
+    run: [awsai-demo agentcore-gateway]
+
+  - id: agentcore.identity
+    kind: content
+    eyebrow: agentcore / identity
+    title: An agent needs an identity of its own
+    deck: Inbound auth decides who may call the agent; outbound auth decides what it may call.
+    audience: [architects]
+    layout: full
+    main:
+      - type: compare
+        h: 3.2
+        left:
+          title: Inbound
+          items:
+            - "IAM (SigV4) or a JWT from your identity provider"
+            - "Checked by Runtime and Gateway before your code runs"
+            - "Who is asking, on whose behalf"
+        right:
+          title: Outbound
+          items:
+            - "Workload identity for the agent"
+            - "OAuth2 and API-key credential providers in a token vault"
+            - "On-behalf-of token exchange for user-delegated access"
+      - type: callout
+        tone: info
+        text: "In code, bedrock_agentcore.identity.requires_access_token fetches the outbound token; the agent never stores a secret."
+    run: [awsai-demo agentcore-identity]
+
+  - id: agentcore.tools
+    kind: content
+    eyebrow: agentcore / built-in tools
+    title: Built-in tools you do not have to sandbox yourself
+    deck: Each is a managed session or a gateway target; each costs money while it runs.
+    audience: [developers, managers]
+    layout: full
+    main:
+      - type: table
+        h: 3.2
+        columns: [Tool, What it gives the agent, Status, In this repo]
+        widths: [3, 6, 2.2, 3.8]
+        rows:
+          - ["Code Interpreter", "Python, JavaScript, Node.js in a sandbox", GA, "Live with --allow-create"]
+          - ["Browser", "A managed Chrome session", GA, "Request shape"]
+          - ["Web Search", "Search as a gateway connector, data stays in AWS", "GA mid-2026", "Request shape"]
+          - ["Payments", "Agent pays for APIs and content within limits", Preview, "Request shape"]
+      - type: callout
+        tone: info
+        text: "The Code Interpreter replaces the Agents Classic AMAZON.CodeInterpreter action group."
+    run: [awsai-demo agentcore-tools]
+
+  - id: agentcore.observe
+    kind: content
+    eyebrow: agentcore / observability and evaluation
+    title: Trace every run, score the ones that matter
+    deck: OpenTelemetry spans show what happened; evaluators say whether it was right.
+    audience: [developers, managers]
+    layout: main_rail
+    main:
+      - type: metrics
+        h: 1.5
+        items:
+          - {value: "{facts.offline.evaluation.passed} / {facts.offline.evaluation.total}", label: "evaluation cases passed"}
+          - {value: "{facts.offline.evaluation.failed_case}", label: "fails on purpose"}
+      - type: text
+        h: 1.0
+        size: 14
+        text: "Span names recorded from a real Strands run: {facts.offline.observability.span_names}"
+      - type: bullets
+        h: 1.9
+        size: 14
+        items:
+          - "Evaluations GA 2026-03-31: built-in, code-based and third-party evaluators"
+          - "Optimization loop: recommendations, batch evaluation, A/B tests"
+          - "Nothing is exported unless you ask; --trace otlp sends to a local collector"
+    rail:
+      - type: callout
+        tone: warning
+        text: "A gate that never fails is not a gate. One case is wrong on purpose, and the run says so."
+    run: [awsai-demo evaluation, awsai-demo observability]
+
+  - id: agentcore.registry
+    kind: content
+    eyebrow: agentcore / registry
+    title: The Agent Registry is how others find your agent
+    deck: A governed catalog of agents, tools, skills and MCP servers, with its own API namespace.
+    audience: [architects, managers]
+    layout: full
+    main:
+      - type: bullets
+        h: 3.2
+        size: 16
+        items:
+          - "Started as AgentCore Registry (preview, April 2026); GA in August 2026 under its own agent-registry API"
+          - "Records for agents, tools, skills, MCP servers and custom resources"
+          - "Auto-discovers AgentCore runtimes and gateways across an AWS Organization"
+          - "Search through the agent-registry API or its MCP endpoint"
+          - "An A2A agent card is what a registry record points to"
+    run: [awsai-demo a2a]

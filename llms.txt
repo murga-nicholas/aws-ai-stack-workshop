@@ -1,0 +1,55 @@
+# AWS AI stack workshop
+
+> A 60-minute DataArt workshop by Mykola Murha (2026-10-05) on building agents with the AWS AI stack, with a runnable Python repository behind every slide. It covers Amazon Bedrock (Converse, OpenAI-compatible APIs, model lifecycle, Guardrails, Flows), Strands Agents, Amazon Bedrock AgentCore (Runtime, harness, Memory, Gateway, Policy, Identity, built-in tools, Observability, Evaluations, Agent Registry), MCP and A2A, Knowledge Bases and S3 Vectors, and LocalStack, beside the services AWS closed to new customers in 2026: Bedrock Agents Classic, Amazon Kendra and Amazon Q Business. Every demo runs offline on a laptop and reports its execution mode.
+
+The presentation is `aws_ai_stack.pptx`: 55 slides, of which 1-44 are presented in 60 minutes and 45-55 are a take-home appendix. PowerPoint files are binary, so the complete text of every slide, with its time window and speaker notes, is in `llms-full.txt`. The deck is generated from declarative YAML in `deck/content/` and quotes recorded demo runs from `deck/facts.json`. Product names, statuses, dates and prices are a snapshot read on 2026-10-05; the single source for every lifecycle fact is `data/lineage.yaml`.
+
+Key facts as of 2026-10-05:
+
+- Amazon Bedrock Agents is now "Agents Classic": maintenance mode announced 2026-06-30, closed to new customers 2026-07-30 (new accounts receive HTTP 403 from CreateAgent). Successors: the AgentCore harness (configuration) or code-defined agents on AgentCore Runtime.
+- Amazon Kendra and Amazon Q Business entered maintenance on 2026-06-30; successors are the Bedrock Managed Knowledge Base and Amazon Quick.
+- AgentCore GA 2025-10-13; Policy GA 2026-03-03; Evaluations GA 2026-03-31; harness and Managed Knowledge Base GA 2026-06-17; AWS Agent Registry GA 2026-08.
+- Bedrock's OpenAI-compatible APIs launched on `bedrock-mantle` (2025-12-03); since 2026-09-15 AWS recommends `bedrock-runtime` (`/openai/v1`).
+- LocalStack requires an auth token since 2026-03-23; Bedrock emulation (via Ollama) needs the Ultimate plan; AgentCore is not emulated.
+
+The minute-by-minute agenda from slide 3:
+
+| When | Segment | What you will see | Command |
+|---|---|---|---|
+| 0-3 min | Opening | The promise and the route | `uv run awsai-demo list` |
+| 3-11 min | Lineage | What replaced what in 2023-2026, and what maintenance mode means | `uv run awsai-demo lineage` |
+| 11-18 min | Bedrock: models | Converse, OpenAI-compatible APIs, the catalog, guardrails, flows | `uv run awsai-demo bedrock-runtime` |
+| 18-23 min | Strands | AWS's open-source agent framework, multi-agent, MCP and A2A | `uv run awsai-demo strands-agent` |
+| 23-36 min | AgentCore | Runtime, harness, memory, gateway and policy, identity, tools, evaluation | `uv run awsai-demo agentcore-harness` |
+| 36-42 min | The decision | One business decision, three implementations, who owns what | `uv run awsai-demo decision` |
+| 42-47 min | Data | Knowledge bases, S3 Vectors, the task-specific AI services | `uv run awsai-demo knowledge-bases` |
+| 47-52 min | LocalStack | What runs locally, on which plan, and what does not | `uv run awsai-demo localstack` |
+| 52-60 min | Close and Q&A | How to choose, and a first step for every role | - |
+
+## Presentation
+
+- [Full presentation text](https://raw.githubusercontent.com/murga-nicholas/aws-ai-stack-workshop/main/llms-full.txt): All 55 slides in order, each with its agenda segment, time window, visible text and speaker notes, followed by the README
+- [Deck](https://raw.githubusercontent.com/murga-nicholas/aws-ai-stack-workshop/main/aws_ai_stack.pptx): The PowerPoint file itself (binary, 16:9, 55 slides)
+- [Speaker notes](https://raw.githubusercontent.com/murga-nicholas/aws-ai-stack-workshop/main/deck/speaker_notes.md): The presenter script, one timed section per slide
+- [Slide content](https://github.com/murga-nicholas/aws-ai-stack-workshop/tree/main/deck/content): The slides as declarative YAML, one file per section
+
+## Repository
+
+- [README](https://raw.githubusercontent.com/murga-nicholas/aws-ai-stack-workshop/main/README.md): What the repository proves, the quickstart, the 30 demo commands, going live, LocalStack and the quality gates
+- [Glossary](https://raw.githubusercontent.com/murga-nicholas/aws-ai-stack-workshop/main/docs/glossary.md): Every AWS AI name, old and new, with its status and dates
+- [Lineage and migration guides](https://raw.githubusercontent.com/murga-nicholas/aws-ai-stack-workshop/main/docs/lineage.md): Agents Classic to AgentCore, Kendra to the Managed Knowledge Base, Q to Quick and Kiro, Titan to Nova 2
+- [LocalStack guide](https://raw.githubusercontent.com/murga-nicholas/aws-ai-stack-workshop/main/docs/localstack.md): What LocalStack emulates for AI, on which plan, and what it does not
+- [Research](https://raw.githubusercontent.com/murga-nicholas/aws-ai-stack-workshop/main/docs/research.md): Every external claim, dated and sourced
+- [Architect guide](https://raw.githubusercontent.com/murga-nicholas/aws-ai-stack-workshop/main/docs/architect_guide.md): The from-zero curriculum, with four gates
+- [Decision records](https://raw.githubusercontent.com/murga-nicholas/aws-ai-stack-workshop/main/docs/decision_records.md): Why the repository is built the way it is
+- [Code tour](https://raw.githubusercontent.com/murga-nicholas/aws-ai-stack-workshop/main/docs/code_tour.md): What to read first in each of the 30 demo modules, and how one request flows through the code
+- [Module spec](https://raw.githubusercontent.com/murga-nicholas/aws-ai-stack-workshop/main/docs/module_spec.md): The contract every demo module follows, including verified API facts
+- [Exercises](https://raw.githubusercontent.com/murga-nicholas/aws-ai-stack-workshop/main/docs/exercises/README.md): The four competence gates as take-home work, with worked answers
+
+## Optional
+
+- [Lifecycle records](https://raw.githubusercontent.com/murga-nicholas/aws-ai-stack-workshop/main/data/lineage.yaml): Every name, status, date, successor and source the deck and CLI use
+- [Component coverage](https://raw.githubusercontent.com/murga-nicholas/aws-ai-stack-workshop/main/data/components.yaml): Which demo and slide cover each AWS component
+- [Grounding corpus](https://raw.githubusercontent.com/murga-nicholas/aws-ai-stack-workshop/main/data/aws_ai_stack_notes.md): The local, sourced notes the retrieval demo searches and cites
+- [Recorded evidence](https://raw.githubusercontent.com/murga-nicholas/aws-ai-stack-workshop/main/deck/facts.json): The demo payloads the slides quote (JSON)
+- [Demo source](https://github.com/murga-nicholas/aws-ai-stack-workshop/tree/main/src/awsai_demo): One Python module per technology

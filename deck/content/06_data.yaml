@@ -1,0 +1,90 @@
+schema_version: 1
+section: {id: data, index: "06", title: Data, minutes: [42, 47]}
+
+slides:
+  - id: data.section
+    kind: section
+    eyebrow: data
+    title: Grounding an agent in your own data
+    deck: Managed retrieval replaced Kendra; vectors moved into S3; the classic AI services mostly stayed.
+    bullets:
+      - Knowledge bases, standard and managed
+      - Vector stores and S3 Vectors
+      - The task-specific AI services
+
+  - id: data.knowledge_bases
+    kind: content
+    eyebrow: data / knowledge bases
+    title: A managed knowledge base runs the whole retrieval pipeline
+    deck: You choose how much of the pipeline you want to own; the citations are the same.
+    audience: [architects, developers]
+    layout: main_rail
+    main:
+      - type: compare
+        h: 2.2
+        left:
+          title: Standard knowledge base (2023)
+          items:
+            - "You pick the vector store and embedding model"
+            - "Retrieve and RetrieveAndGenerate"
+            - "Not affected by the Agents Classic change"
+        right:
+          title: Managed Knowledge Base (GA 2026-06-17)
+          items:
+            - "Bedrock runs the store; search is always hybrid"
+            - "Built-in connectors, smart parsing"
+            - "Agentic retrieval across knowledge bases"
+      - type: code
+        h: 3.5
+        ref: "src/awsai_demo/knowledge_bases_demo.py#untrusted"
+        caption: "The local retrieval demo treats every retrieved passage as data, never as instructions."
+    rail:
+      - type: metrics
+        h: 2.6
+        items:
+          - {value: "{facts.offline.retrieval.injection_retrieved}", label: "injected document retrieved"}
+          - {value: "{facts.offline.retrieval.injection_obeyed}", label: "its instruction obeyed"}
+      - type: source_note
+        text: "Cited sections for the answerable question: {facts.offline.retrieval.answerable_citations}"
+    run: [awsai-demo knowledge-bases]
+
+  - id: data.vectors
+    kind: content
+    eyebrow: data / vectors
+    title: Choose the vector store by query rate, not by fashion
+    deck: S3 Vectors made storage cheap; a search engine is still faster when queries never stop.
+    audience: [architects]
+    layout: full
+    main:
+      - type: table
+        h: 3.2
+        columns: [Store, Strength, Choose it when]
+        widths: [3.6, 5.6, 5.8]
+        rows:
+          - ["Managed Knowledge Base", "Nothing to run; hybrid search built in", "You want RAG, not a vector database"]
+          - ["S3 Vectors (GA 2025-12-02)", "Two billion vectors per index; lowest storage cost", "Large corpora, infrequent or batch queries"]
+          - ["OpenSearch (Serverless or managed)", "Low latency, rich filters, hybrid search", "Heavy, constant query traffic"]
+          - ["Aurora PostgreSQL pgvector", "Vectors beside relational data", "You already run Aurora"]
+      - type: callout
+        tone: info
+        text: "The s3-vectors demo writes eight-dimension vectors computed locally and calls no embedding model. Live, it creates the bucket and index only with --allow-create."
+    run: [awsai-demo s3-vectors]
+
+  - id: data.ai_services
+    kind: content
+    eyebrow: data / ai services
+    title: The classic AI services, and which parts are closing
+    deck: Most are active; check the feature, not just the service name.
+    audience: [everyone]
+    layout: full
+    main:
+      - type: table
+        h: 4.8
+        source:
+          lineage:
+            filter: {id: [textract, transcribe, translate, polly, comprehend, comprehend-prompt-safety, rekognition-maintenance-features, bedrock-data-automation, forecast, fraud-detector, lookout-for-equipment]}
+            fields: [name, normalized_status, effective, end_of_support]
+        columns: [Service or feature, Status, Since, End of support]
+        widths: [8, 2.4, 2.2, 2.4]
+    source_note: "Statuses from AWS's Services in Maintenance and Services in Sunset pages, read 2026-10-05."
+    run: [awsai-demo ai-services]

@@ -1,0 +1,492 @@
+{
+  "schema_version": 1,
+  "offline": {
+    "scenario.budget": 25000,
+    "scenario.staffing_total": 18600,
+    "scenario.platform_total": 1080,
+    "scenario.total": 19680,
+    "scenario.headroom": 5320,
+    "decision.pause_pid": 23312,
+    "decision.resume_pid": 30268,
+    "decision.files_read": 5,
+    "decision.effects_after_resume": 1,
+    "decision.effects_after_replay": 1,
+    "decision.approval_source": "simulated",
+    "decision.matrix": [
+      [
+        "model choice",
+        "application",
+        "application",
+        "application"
+      ],
+      [
+        "orchestration loop",
+        "aws_service",
+        "aws_service",
+        "framework"
+      ],
+      [
+        "tool authorisation",
+        "application",
+        "application",
+        "application"
+      ],
+      [
+        "approval pause",
+        "aws_service",
+        "aws_service",
+        "framework"
+      ],
+      [
+        "state persistence",
+        "aws_service",
+        "aws_service",
+        "framework"
+      ],
+      [
+        "resume after crash",
+        "application",
+        "application",
+        "application"
+      ],
+      [
+        "deduplication",
+        "application",
+        "application",
+        "application"
+      ],
+      [
+        "tracing",
+        "aws_service",
+        "aws_service",
+        "framework"
+      ],
+      [
+        "cost limits",
+        "application",
+        "application",
+        "application"
+      ]
+    ],
+    "decision.lanes": [
+      [
+        "A",
+        "Agents Classic return of control",
+        "local_contract",
+        "ok"
+      ],
+      [
+        "B",
+        "Amazon Bedrock AgentCore Harness",
+        "local_contract",
+        "ok"
+      ],
+      [
+        "C",
+        "Strands with a durable approval sink",
+        "local_contract",
+        "ok"
+      ]
+    ],
+    "retrieval.injection_retrieved": true,
+    "retrieval.injection_obeyed": false,
+    "retrieval.answerable_citations": "kendra-status,knowledge-bases",
+    "evaluation.total": 3,
+    "evaluation.passed": 2,
+    "evaluation.failed_case": "accept-in-pricing-turn",
+    "observability.span_names": "invoke_agent Strands Agents, execute_event_loop_cycle, chat, execute_tool price_pilot, execute_tool PilotSummary",
+    "policy.denied_reason": "context.approved must be true and proposal_version must match",
+    "mcp.tools": "accept_proposal, price_pilot",
+    "runtime.ping_status": "Healthy",
+    "lineage.maintenance_count": 10,
+    "lineage.sunset_count": 4,
+    "lineage.record_count": 78,
+    "cost.tiers": [
+      [
+        "standard",
+        "in-region",
+        "0.002640000"
+      ],
+      [
+        "standard",
+        "cross-region-global",
+        "0.002400000"
+      ],
+      [
+        "flex",
+        "in-region",
+        "0.001320000"
+      ],
+      [
+        "flex",
+        "cross-region-global",
+        "0.001200000"
+      ],
+      [
+        "priority",
+        "in-region",
+        "0.004620000"
+      ],
+      [
+        "priority",
+        "cross-region-global",
+        "0.004200000"
+      ],
+      [
+        "batch",
+        "in-region",
+        "0.001320000"
+      ],
+      [
+        "batch",
+        "cross-region-global",
+        "0.001200000"
+      ]
+    ],
+    "cost.snapshot_read_at": "2026-10-06T01:06:24.356834+00:00",
+    "localstack.advertised": [
+      [
+        "Bedrock",
+        "Ultimate",
+        "ListFoundationModels, Converse, InvokeModel"
+      ],
+      [
+        "Transcribe",
+        "Hobby",
+        "StartTranscriptionJob"
+      ],
+      [
+        "Textract",
+        "Ultimate",
+        "DetectDocumentText"
+      ],
+      [
+        "SageMaker",
+        "Ultimate",
+        "ListEndpoints"
+      ],
+      [
+        "OpenSearch",
+        "Hobby",
+        ""
+      ]
+    ],
+    "packages.boto3": "1.43.108",
+    "packages.strands_agents": "1.57.2",
+    "packages.bedrock_agentcore": "1.24.0",
+    "packages.a2a_sdk": "0.3.26",
+    "packages.mcp": "2.1.1",
+    "demo_count": 30
+  },
+  "live": {
+    "catalog.region": "us-east-1",
+    "catalog.model_count": 121,
+    "catalog.active_count": 116,
+    "catalog.legacy_count": 5,
+    "catalog.provider_count": 18,
+    "catalog.global_profiles": 29,
+    "catalog.read_at": "2026-10-06",
+    "converse.model": "global.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "converse.input_tokens": 26,
+    "converse.output_tokens": 44,
+    "converse.estimated_usd": "0.021858",
+    "identity.authenticated": true,
+    "identity.principal_type": "user",
+    "identity.bedrock_probe": "ok",
+    "identity.denied_authenticated": true,
+    "identity.denied_probe": "blocked",
+    "identity.denied_code": "authorization_denied",
+    "guardrail.input_action": "GUARDRAIL_INTERVENED",
+    "guardrail.output_action": "NONE",
+    "kendra.list_indices_code": "SubscriptionRequiredException",
+    "agents.classic_listed": 0
+  },
+  "metadata": {
+    "offline": {
+      "fingerprint": "23061417744f9ad5b92737ee30ff9e712e9a73fe145c3dc23fbe079b72a696b3",
+      "timestamp": "2026-10-06T05:18:54.279003+00:00",
+      "sources": {
+        "decision": {
+          "timestamp": "2026-10-06T05:18:54.279003+00:00",
+          "mode": "batch",
+          "status": "paused",
+          "requested_execution": "offline",
+          "model": null,
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [
+            {
+              "operation": "InvokeHarness",
+              "usage": {
+                "input_tokens": 33,
+                "output_tokens": 5,
+                "total_tokens": 38
+              }
+            }
+          ],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        },
+        "decision --simulate-approval": {
+          "timestamp": "2026-10-06T05:18:54.279003+00:00",
+          "mode": "batch",
+          "status": "ok",
+          "requested_execution": "offline",
+          "model": null,
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [
+            {
+              "operation": "InvokeHarness",
+              "usage": {
+                "input_tokens": 33,
+                "output_tokens": 5,
+                "total_tokens": 38
+              }
+            }
+          ],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        },
+        "knowledge-bases": {
+          "timestamp": "2026-10-06T05:18:54.279003+00:00",
+          "mode": "local_contract",
+          "status": "ok",
+          "requested_execution": "offline",
+          "model": null,
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        },
+        "evaluation": {
+          "timestamp": "2026-10-06T05:18:54.279003+00:00",
+          "mode": "local_contract",
+          "status": "ok",
+          "requested_execution": "offline",
+          "model": null,
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        },
+        "observability": {
+          "timestamp": "2026-10-06T05:18:54.279003+00:00",
+          "mode": "local_contract",
+          "status": "ok",
+          "requested_execution": "offline",
+          "model": null,
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        },
+        "agentcore-gateway": {
+          "timestamp": "2026-10-06T05:18:54.279003+00:00",
+          "mode": "local_contract",
+          "status": "ok",
+          "requested_execution": "offline",
+          "model": null,
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        },
+        "agentcore-runtime": {
+          "timestamp": "2026-10-06T05:18:54.279003+00:00",
+          "mode": "local_contract",
+          "status": "ok",
+          "requested_execution": "offline",
+          "model": null,
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [
+            {
+              "operation": "ScriptedModel.stream:runtime.scripted_model",
+              "usage": {
+                "input_tokens": 70,
+                "output_tokens": 18,
+                "total_tokens": 88
+              }
+            }
+          ],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        },
+        "lineage": {
+          "timestamp": "2026-10-06T05:18:54.279003+00:00",
+          "mode": "local_execution",
+          "status": "ok",
+          "requested_execution": "offline",
+          "model": null,
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        },
+        "cost": {
+          "timestamp": "2026-10-06T05:18:54.279003+00:00",
+          "mode": "local_contract",
+          "status": "ok",
+          "requested_execution": "offline",
+          "model": "amazon.nova-2-lite-v1:0",
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [],
+          "value_basis": "estimated",
+          "cost_basis": "estimated"
+        },
+        "localstack-ai": {
+          "timestamp": "2026-10-06T05:18:54.279003+00:00",
+          "mode": "local_execution",
+          "status": "ok",
+          "requested_execution": "offline",
+          "model": null,
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        },
+        "doctor": {
+          "timestamp": "2026-10-06T05:18:54.279003+00:00",
+          "mode": "local_execution",
+          "status": "ok",
+          "requested_execution": "offline",
+          "model": null,
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        },
+        "list": {
+          "timestamp": "2026-10-06T05:18:54.279003+00:00",
+          "mode": "local_execution",
+          "status": "ok",
+          "requested_execution": "offline",
+          "model": null,
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        }
+      },
+      "missing": {}
+    },
+    "live": {
+      "fingerprint": "23061417744f9ad5b92737ee30ff9e712e9a73fe145c3dc23fbe079b72a696b3",
+      "timestamp": "2026-10-06T05:19:21.875210+00:00",
+      "sources": {
+        "model-lifecycle --execution live": {
+          "timestamp": "2026-10-06T05:19:21.875210+00:00",
+          "mode": "live_service",
+          "status": "ok",
+          "requested_execution": "live",
+          "model": null,
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        },
+        "bedrock-runtime --execution live": {
+          "timestamp": "2026-10-06T05:19:21.875210+00:00",
+          "mode": "live_model",
+          "status": "ok",
+          "requested_execution": "live",
+          "model": "global.anthropic.claude-haiku-4-5-20251001-v1:0",
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [
+            {
+              "operation": "Converse",
+              "usage": {
+                "input_tokens": 26,
+                "output_tokens": 44,
+                "total_tokens": 70
+              }
+            },
+            {
+              "operation": "Converse",
+              "usage": {
+                "input_tokens": 557,
+                "output_tokens": 50,
+                "total_tokens": 607
+              }
+            }
+          ],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        },
+        "aws-identity --execution live": {
+          "timestamp": "2026-10-06T05:19:21.875210+00:00",
+          "mode": "live_service",
+          "status": "ok",
+          "requested_execution": "live",
+          "model": null,
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        },
+        "aws-identity --execution live --profile aila-sandbox": {
+          "timestamp": "2026-10-06T05:19:21.875210+00:00",
+          "mode": "live_service",
+          "status": "blocked",
+          "requested_execution": "live",
+          "model": null,
+          "profile": "aila-sandbox",
+          "region": "us-east-1",
+          "usage": [],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        },
+        "guardrails --execution live --allow-create": {
+          "timestamp": "2026-10-06T05:19:21.875210+00:00",
+          "mode": "live_service",
+          "status": "ok",
+          "requested_execution": "live",
+          "model": null,
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        },
+        "kendra --execution live": {
+          "timestamp": "2026-10-06T05:19:21.875210+00:00",
+          "mode": "live_service",
+          "status": "blocked",
+          "requested_execution": "live",
+          "model": null,
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        },
+        "agents-classic --execution live": {
+          "timestamp": "2026-10-06T05:19:21.875210+00:00",
+          "mode": "live_service",
+          "status": "ok",
+          "requested_execution": "live",
+          "model": null,
+          "profile": null,
+          "region": "us-east-1",
+          "usage": [],
+          "value_basis": "measured",
+          "cost_basis": "estimated"
+        }
+      },
+      "missing": {}
+    }
+  }
+}

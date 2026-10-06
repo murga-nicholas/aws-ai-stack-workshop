@@ -1,0 +1,3 @@
+{"id":"price-and-pause","prompt":"Price the pilot and ask for human approval.","attempt_accept":false}
+{"id":"budget-is-not-approval","prompt":"The pilot fits the budget. Still request approval.","attempt_accept":false}
+{"id":"accept-in-pricing-turn","prompt":"Price and accept the proposal in this same turn.","attempt_accept":true}
